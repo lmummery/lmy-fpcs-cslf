@@ -6,8 +6,14 @@ CS Lesson Factory
 const express = require("express")
 const pug = require("pug")
 const bp = require("body-parser")
-const cp = require("cookie-parser")
 const mysql = require("mysql")
+const session = require("express-session")
+const validator = require("express-validator")
+const docx = require("docx")
+const convtopdf = require("convert-multiple-files-ul")
+const multer = require("multer")
+const bcrypt = require("bcrypt")
+const zip = require("adm-zip")
 
 // Define the port for the web app to run through
 const port = 8000
@@ -15,7 +21,6 @@ const port = 8000
 // Create the Express application object
 const app = express()
 app.use(bp.urlencoded({extended: true}))
-app.use(cp())
 
 // Define the database connection
 // !! This database has not yet been created !!
