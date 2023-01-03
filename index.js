@@ -30,7 +30,7 @@ const db = mysql.createConnection(
 		user: "cslf-server",
 		port: "3306",
 		password: "IS53007E!202223",
-		database: "cslf"
+		database: "fpcs_cslf"
 	}
 )
 
