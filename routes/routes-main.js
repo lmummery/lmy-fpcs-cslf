@@ -4,24 +4,26 @@ Route handler for CS Lesson Factory web app
 
 module.exports = (app, appData) =>
 {
+	const {body} = require("express-validator")
+
 	function redirectIfLoggedIn (req, res, next)
 	{
-		next()
+		if (req.session.user) res.redirect("./mydetails")
+		else next()
 	}
 
 	function redirectIfNotLoggedIn (req, res, next)
 	{
-		next()
+		if (! req.session.user) res.redirect("./login")
+		else next()
 	}
-
-	const {body} = require("express-validator")
 
 	app.get("/", (req, res) =>
 	{
 		res.render("index", appData)
 	})
 
-	app.get("/newactivity", (req, res) =>
+	app.get("/newactivity", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("newactivity", appData)
 	})
@@ -30,7 +32,7 @@ module.exports = (app, appData) =>
 		body("title").notEmpty(), body("duration").isInt(),
 		body("description").notEmpty()
 	]
-	app.post("/newactivity", activityValidation, (req, res) =>
+	app.post("/newactivity", redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
 	})
 
@@ -39,16 +41,16 @@ module.exports = (app, appData) =>
 		res.render("activity", appData)
 	})
 
-	app.get("/activity/:id/edit", activityValidation, (req, res) =>
+	app.get("/activity/:id/edit", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("activity-edit", appData)
 	})
 
-	app.put("/activity/:id/edit", (req, res) =>
+	app.put("/activity/:id/edit", redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
 	})
 
-	app.get("/generator", (req, res) =>
+	app.get("/generator", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("generator", appData)
 	})
@@ -56,7 +58,7 @@ module.exports = (app, appData) =>
 	const generatorValidation = [
 		body("tags").notEmpty(), body("duration").isInt()
 	]
-	app.post("/generate", generatorValidation, (req, res) =>
+	app.post("/generate", redirectIfNotLoggedIn, generatorValidation, (req, res) =>
 	{
 	})
 
@@ -66,27 +68,32 @@ module.exports = (app, appData) =>
 	})
 
 
-	app.get("/lesson/:id/edit", (req, res) =>
+	app.get("/lesson/:id/edit", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("lesson-edit", appData)
 	})
 
-	app.get("/myactivities", (req, res) =>
+	app.put("/lesson/:id/edit", redirectIfNotLoggedIn, (req, res) =>
+	{
+
+	})
+
+	app.get("/myactivities", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("user-activities", appData)
 	})
 
-	app.get("/favourites", (req, res) =>
+	app.get("/favourites", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("user-favourites", appData)
 	})
 
-	app.get("/mylessons", (req, res) =>
+	app.get("/mylessons", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("user-lessons", appData)
 	})
 
-	app.get("/login", (req, res) =>
+	app.get("/login", redirectIfLoggedIn, (req, res) =>
 	{
 		res.render("login", appData)
 	})
@@ -94,11 +101,11 @@ module.exports = (app, appData) =>
 	const loginValidation = [
 		body("username").notEmpty(), body("password").notEmpty()
 	]
-	app.post("/login", loginValidation, (req, res) =>
+	app.post("/login", redirectIfLoggedIn, loginValidation, (req, res) =>
 	{
 	})
 
-	app.get("/signup", (req, res) =>
+	app.get("/signup", redirectIfLoggedIn, (req, res) =>
 	{
 		res.render("signup", appData)
 	})
@@ -114,16 +121,16 @@ module.exports = (app, appData) =>
 			minSymbols: 1
 		})
 	]
-	app.post("/signup", userDetailsValidation, (req, res) =>
+	app.post("/signup", redirectIfLoggedIn, userDetailsValidation, (req, res) =>
 	{
 	})
 
-	app.get("/mydetails", (req, res) =>
+	app.get("/mydetails", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("user-details", appData)
 	})
 
-	app.put("/mydetails", userDetailsValidation, (req, res) =>
+	app.put("/mydetails", redirectIfNotLoggedIn, userDetailsValidation, (req, res) =>
 	{
 	})
 
@@ -133,5 +140,10 @@ module.exports = (app, appData) =>
 
 	app.post("/search", (req, res) =>
 	{
+	})
+
+	app.get("*", (req, res) =>
+	{
+		res.render("error", appData)
 	})
 }
