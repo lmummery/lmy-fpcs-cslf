@@ -28,7 +28,7 @@ create table user (
 	surname varchar(100) not null,
 	role varchar(50),
 	phase varchar(4),
-	school_id int not null,
+	school_id int,
 	passwordHash varchar(250) not null,
 	primary key (id),
 	foreign key (school_id) references school (id)
