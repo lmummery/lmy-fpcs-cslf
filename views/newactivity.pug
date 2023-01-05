@@ -2,6 +2,54 @@ doctype html
 
 html(lang="en")
 	head
+		title New Activity
 		include head
+		link(rel="stylesheet" href="css/activity-form-styles.css")
 	body
 		include header
+		main
+			h2 New Activity
+			form(method="post" action="./newactivity")
+				div.standardfield
+					label(for="title") Title
+					input(type="text" name="title" id="title")
+
+				div#yg-field
+					label Year Groups
+					input(type="checkbox" name="y1" id="y1-select")
+					label(for="y1-select") Year 1
+					input(type="checkbox" name="y1" id="y2-select")
+					label(for="y2-select") Year 2
+					input(type="checkbox" name="y3" id="y3-select")
+					label(for="y3-select") Year 3
+					input(type="checkbox" name="y4" id="y4-select")
+					label(for="y4-select") Year 4
+					input(type="checkbox" name="y5" id="y5-select")
+					label(for="y5-select") Year 5
+					input(type="checkbox" name="y6" id="y6-select")
+					label(for="y6-select") Year 6
+
+				div#tags-field
+					label(for="tags") Tags
+					input(type="text" name="tags" id="tags")
+
+				div#desc-field
+					label(for="description") Description
+					input(type="text" name="description" id="description")
+
+				div#files-field
+					label(for="files") Files
+					button(onclick="alert('Clicked')") + Upload
+					input(type="file" name="files" id="files")
+
+				div#time-field
+					label(for="duration") Time
+					select(name="duration" id="duration")
+						option(value=5) 5
+						option(value=10) 10
+						option(value=15) 15
+						option(value=20) 20
+						option(value=25) 25
+						option(value=30) 30
+						option(value=35) 35
+					label minutes

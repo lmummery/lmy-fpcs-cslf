@@ -2,5 +2,8 @@ nav ul {
   list-style: none;
   display: flex;
 }
+nav ul li {
+  margin: auto 10px;
+}
 
 /*# sourceMappingURL=styles.css.map */

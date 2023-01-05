@@ -1,0 +1,39 @@
+@media (min-width: 500px) {
+  form * {
+    margin-bottom: 5px;
+  }
+
+  .standardfield {
+    display: grid;
+    grid-template-columns: 150px 700px;
+  }
+
+  #tags-field, #desc-field, #files-field, #time-field {
+    display: grid;
+  }
+  #tags-field *, #desc-field *, #files-field *, #time-field * {
+    margin-right: 5px;
+  }
+
+  #yg-field label:first-child {
+    width: 95px;
+    margin-right: 5px;
+  }
+
+  #tags-field, #desc-field {
+    grid-template-columns: 95px 475px;
+  }
+  #tags-field input, #desc-field input {
+    height: 50px;
+  }
+
+  #files-field {
+    grid-template-columns: 75px 80px 200px;
+  }
+
+  #time-field {
+    grid-template-columns: 75px 75px 100px;
+  }
+}
+
+/*# sourceMappingURL=activity-form-styles.css.map */

@@ -8,12 +8,16 @@ module.exports = (app, appData) =>
 
 	function redirectIfLoggedIn (req, res, next)
 	{
+		next()
+		return
 		if (req.session.user) res.redirect("./mydetails")
 		else next()
 	}
 
 	function redirectIfNotLoggedIn (req, res, next)
 	{
+		next()
+		return
 		if (! req.session.user) res.redirect("./login")
 		else next()
 	}
