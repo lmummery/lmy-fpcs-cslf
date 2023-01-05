@@ -23,6 +23,20 @@ module.exports = (app, appData) =>
 		res.render("index", appData)
 	})
 
+	app.get("/newlesson", redirectIfNotLoggedIn, (req, res) =>
+	{
+		res.render("newlesson", appData)
+	})
+
+	const lessonValidation = [
+		body("title").notEmpty(),
+		body("duration").isInt()
+	]
+	app.post("/newlesson", lessonValidation, redirectIfNotLoggedIn, (req, res) =>
+	{
+
+	})
+
 	app.get("/newactivity", redirectIfNotLoggedIn, (req, res) =>
 	{
 		res.render("newactivity", appData)
@@ -73,7 +87,7 @@ module.exports = (app, appData) =>
 		res.render("lesson-edit", appData)
 	})
 
-	app.put("/lesson/:id/edit", redirectIfNotLoggedIn, (req, res) =>
+	app.put("/lesson/:id/edit", lessonValidation, redirectIfNotLoggedIn, (req, res) =>
 	{
 
 	})
