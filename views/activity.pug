@@ -2,6 +2,26 @@ doctype html
 
 html(lang="en")
 	head
+		title Activity
 		include head
+		link(rel="stylesheet" href="../css/activity-lesson-styles.css")
 	body
 		include header
+		h2 Activity Title
+		div.activity-description
+			h3 Activity Description
+			p Activity description
+
+		div.activity-details
+			h3 Activity Details
+			p Activity years
+			p Activity duration
+
+		div.activity-files
+			h3 Activity Files
+			button() Download All
+			table#activity-files
+				tr.file
+					td.filename filename
+					td.filesize filesize
+					td.download ↓
