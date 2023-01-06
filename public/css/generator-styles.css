@@ -1,0 +1,33 @@
+@media (min-width: 500px) {
+  form * {
+    margin-left: 5px;
+    margin-bottom: 5px;
+  }
+
+  #yg-field, #tags-field, #time-field {
+    display: grid;
+  }
+  #yg-field *, #tags-field *, #time-field * {
+    margin-right: 5px;
+  }
+
+  #yg-field {
+    grid-template-columns: 95px 150px;
+  }
+
+  #tags-field {
+    grid-template-columns: 95px 475px;
+  }
+
+  #time-field {
+    grid-template-columns: 95px 75px 100px;
+  }
+
+  input[type=submit] {
+    margin-left: 30px;
+    width: auto;
+    height: 50px;
+  }
+}
+
+/*# sourceMappingURL=generator-styles.css.map */

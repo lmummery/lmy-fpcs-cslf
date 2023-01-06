@@ -2,6 +2,38 @@ doctype html
 
 html(lang="en")
 	head
+		title Lesson Generator
 		include head
+		link(rel="stylesheet" href="css/generator-styles.css")
 	body
 		include header
+		main
+			h2 Lesson Generator
+			form(method="post" action="./generate")
+				div#yg-field
+					label(for="year") Year Group
+					select(name="year" id="year")
+						option(value=1) Year 1
+						option(value=2) Year 2
+						option(value=3) Year 3
+						option(value=4) Year 4
+						option(value=5) Year 5
+						option(value=6) Year 6
+
+				div#tags-field
+					label(for="tags") Tags
+					input(type="text" name="tags" id="tags")
+
+				div#time-field
+					label(for="duration") Time
+					select(name="duration" id="duration")
+						option(value=5) 5
+						option(value=10) 10
+						option(value=15) 15
+						option(value=20) 20
+						option(value=25) 25
+						option(value=30) 30
+						option(value=35) 35
+					label minutes
+
+				input(type="submit" value="Generate Lesson")
