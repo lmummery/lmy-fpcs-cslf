@@ -10,7 +10,7 @@ module.exports = (app, appData) =>
 	{
 		next()
 		return
-		if (req.session.user) res.redirect("./mydetails")
+		if (req.session.user) res.redirect("../mydetails")
 		else next()
 	}
 
@@ -18,7 +18,7 @@ module.exports = (app, appData) =>
 	{
 		next()
 		return
-		if (! req.session.user) res.redirect("./login")
+		if (! req.session.user) res.redirect("../login")
 		else next()
 	}
 
