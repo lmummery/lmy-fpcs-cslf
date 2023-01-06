@@ -1,0 +1,34 @@
+@media(min-width: 500px)
+	#sidebar, #main
+		display: inline-block
+
+	#sidebar
+		width: 25vw
+		height: 100vh
+		max-width: 200px
+		border-right: solid 1px grey
+
+		nav
+			ul
+				display: block
+				list-style: none
+
+	#main
+		margin-left: 10px
+
+	// Details form
+
+	#username-field, #password-field, #title-field, #firstname-field, #surname-field
+		display: grid
+		margin-bottom: 5px
+		*
+			margin-right: 10px
+
+	#username-field, #firstname-field, #surname-field
+		grid-template-columns: 100px 175px
+
+	#password-field
+		grid-template-columns: 100px 175px 75px
+
+	#title-field
+		grid-template-columns: 100px 75px

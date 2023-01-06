@@ -1,3 +1,42 @@
+@media (min-width: 500px) {
+  #sidebar, #main {
+    display: inline-block;
+  }
 
+  #sidebar {
+    width: 25vw;
+    height: 100vh;
+    max-width: 200px;
+    border-right: solid 1px grey;
+  }
+  #sidebar nav ul {
+    display: block;
+    list-style: none;
+  }
+
+  #main {
+    margin-left: 10px;
+  }
+
+  #username-field, #password-field, #title-field, #firstname-field, #surname-field {
+    display: grid;
+    margin-bottom: 5px;
+  }
+  #username-field *, #password-field *, #title-field *, #firstname-field *, #surname-field * {
+    margin-right: 10px;
+  }
+
+  #username-field, #firstname-field, #surname-field {
+    grid-template-columns: 100px 175px;
+  }
+
+  #password-field {
+    grid-template-columns: 100px 175px 75px;
+  }
+
+  #title-field {
+    grid-template-columns: 100px 75px;
+  }
+}
 
 /*# sourceMappingURL=user-section-styles.css.map */

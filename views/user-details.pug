@@ -2,6 +2,42 @@ doctype html
 
 html(lang="en")
 	head
+		title My Details
 		include head
+		link(rel="stylesheet" href="../css/user-section-styles.css")
 	body
 		include header
+		main
+			include sidebar
+			div#main
+				h2 My Details
+				form(method="put" action="../mydetails")
+					div#username-field
+						label(for="username") Username
+						input(type="text" name="username" id="username")
+
+					div#password-field
+						label(for="password") Password
+						input(type="password" name="username" id="password" disabled)
+						button() Change
+
+					div#title-field
+						label(for="title") Title
+						select(name="title" id="title")
+							option(value="") (none)
+							option(value="Mx") Mx
+							option(value="Mr") Mr
+							option(value="Ms") Ms
+							option(value="Miss") Miss
+							option(value="Mrs") Mrs
+							option(value="Dr") Dr
+
+					div#firstname-field
+						label(for="firstname") First Name
+						input(type="text" name="firstname" id="firstname")
+
+					div#surname-field
+						label(for="surname") Surname
+						input(type="text" name="surname" id="surname")
+
+					input(type="submit" value="Save Changes")
