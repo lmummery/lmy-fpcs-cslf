@@ -2,6 +2,22 @@ doctype html
 
 html(lang="en")
 	head
+		title My Favourites
 		include head
+		link(rel="stylesheet" href="../css/user-section-styles.css")
 	body
 		include header
+		main
+			include sidebar
+			div#main
+				h2 My Favourites
+				div.user-activity
+					div.act-body
+						h3.act-title activity.title
+						div.act-details
+							p.act-date activity.date-created
+							p.act-time activity.duration
+							p.act-yg activity.yg
+							p.act-files activity.files.length
+					div.controls
+						label *
