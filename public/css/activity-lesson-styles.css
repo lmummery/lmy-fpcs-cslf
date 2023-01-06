@@ -35,6 +35,27 @@
   #time-field {
     grid-template-columns: 75px 75px 100px;
   }
+
+  .lesson-activity {
+    border: solid 1px black;
+  }
+  .lesson-activity .act-body {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  .lesson-activity .act-body h3 {
+    width: 100%;
+  }
+  .lesson-activity .act-body p {
+    display: inline;
+    margin-right: 10px;
+  }
+  .lesson-activity label, .lesson-activity a {
+    position: relative;
+    left: 95%;
+    top: 50%;
+    bottom: 50%;
+  }
 }
 
 /*# sourceMappingURL=activity-lesson-styles.css.map */

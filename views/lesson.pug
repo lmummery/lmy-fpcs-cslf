@@ -2,6 +2,17 @@ doctype html
 
 html(lang="en")
 	head
+		title Lesson
 		include head
+			link(rel="stylesheet" href="../css/activity-lesson-styles.css")
 	body
 		include header
+		main
+			h2 Lesson Title
+			// each activity in lesson
+			div.lesson-activity
+				div.act-body
+					h3.act-title activity.title
+					p.act-time activity.duration
+					p.act- activity.files.length
+				label X
