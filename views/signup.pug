@@ -2,6 +2,42 @@ doctype html
 
 html(lang="en")
 	head
+		title Sign Up
 		include head
+		link(rel="stylesheet" href="../css/signup-login-styles.css")
 	body
 		include header
+		h2 Join CS Lesson Factory
+		form(method="post" action="../signup")
+			div.selectfield
+				label(for="title") Title
+				select(name="title" id="title")
+					option(value="") (none)
+					option(value="Mx") Mx
+					option(value="Mr") Mr
+					option(value="Ms") Ms
+					option(value="Miss") Miss
+					option(value="Mrs") Mrs
+					option(value="Dr") Dr
+
+			div.formfield
+				label(for="firstname") First Name
+				input(type="text" name="firstname" id="firstname")
+
+			div.formfield
+				label(for="surname") Surname
+				input(type="text" name="surname" id="surname")
+
+			div.formfield
+				label(for="username") Username
+				input(type="text" name="username" id="username")
+
+			div.formfield
+				label(for="password") Password
+				input(type="text" name="password" id="password")
+
+			div.formfield
+				label(for="conf-password") Confirm Password
+				input(type="text" name="conf-password" id="conf-password")
+
+			input(type="submit" value="Sign Up")

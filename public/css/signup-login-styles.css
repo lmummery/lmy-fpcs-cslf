@@ -1,0 +1,15 @@
+@media (min-width: 500px) {
+  .formfield {
+    display: grid;
+    grid-template-columns: 150px 150px;
+    margin-bottom: 5px;
+  }
+
+  .selectfield {
+    display: grid;
+    grid-template-columns: 150px 70px;
+    margin-bottom: 5px;
+  }
+}
+
+/*# sourceMappingURL=signup-login-styles.css.map */

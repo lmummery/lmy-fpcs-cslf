@@ -2,6 +2,19 @@ doctype html
 
 html(lang="en")
 	head
+		title Log In
 		include head
+		link(rel="stylesheet" href="../css/signup-login-styles.css")
 	body
 		include header
+		h2 Log In
+		form(method="post" action="../login")
+			div.formfield
+				label(for="username") Username
+				input(type="text" name="username" id="username")
+
+			div.formfield
+				label(for="password") Password
+				input(type="text" name="password" id="password")
+
+			input(type="submit" value="Log In")
