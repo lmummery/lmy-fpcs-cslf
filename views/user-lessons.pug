@@ -2,6 +2,23 @@ doctype html
 
 html(lang="en")
 	head
+		title My Lessons
 		include head
+		link(rel="stylesheet" href="../css/user-section-styles.css")
 	body
 		include header
+		main
+			include sidebar
+			div#main
+				h2 My Lessons
+				div.user-activity
+					div.act-body
+						h3.act-title lesson.title
+						div.act-details
+							p.act-time lesson.duration
+							p
+							p.act-yg lesson.yg
+							p.act-files lesson.activities.length
+					div.controls
+						label Edit
+						label X
