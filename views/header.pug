@@ -5,10 +5,11 @@ nav
 		li: a(href="../newactivity") New Activity
 		li: a(href="../generator") Generate a Lesson
 
-		li: a(href="../mydetails") My Account
-		li: a(href="../myactivities") My Activities
-		li: a(href="../favourites") My Favourites
-		li: a(href="../mylessons") My Lessons
-
-		li: a(href="../signup") Get Started
-		li: a(href="../login") Log In
+		if userLoggedIn
+			li: a(href="../mydetails") My Account
+			li: a(href="../myactivities") My Activities
+			li: a(href="../favourites") My Favourites
+			li: a(href="../mylessons") My Lessons
+		else
+			li: a(href="../signup") Get Started
+			li: a(href="../login") Log In

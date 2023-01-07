@@ -9,6 +9,7 @@ const bp = require("body-parser")
 const mysql = require("mysql")
 const session = require("express-session")
 const validator = require("express-validator")
+const sanitizer = require("express-sanitizer")
 const docx = require("docx")
 const convtopdf = require("convert-multiple-files-ul")
 const multer = require("multer")
@@ -69,6 +70,19 @@ let appData = {
 	appName: "CS Lesson Factory",
 	port: port // Will be passed into pug templates to run AJAX requests
 }
+
+// Enable sessions for storing user data
+app.use(session(
+	{
+		secret: "IS53007E-FPiCS-LMY",
+		resave: false,
+		saveUninitialized: false,
+		cookie: {expires: 600_000}
+	}
+))
+
+// Create an input sanitizer to prevent text injection attacks
+app.use(sanitizer())
 
 // Require routes-main.js from routes to handle Express routing, passing the Express app object and base data
 require("./routes/routes-main")(app, appData)
