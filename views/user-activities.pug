@@ -11,14 +11,16 @@ html(lang="en")
 			include sidebar
 			div#main
 				h2 My Activities
-				div.user-activity
-					div.act-body
-						h3.act-title activity.title
-						div.act-details
-							p.act-date activity.date-created
-							p.act-time activity.duration
-							p.act-yg activity.yg
-							p.act-files activity.files.length
-					div.controls
-						label Edit
-						label X
+				table
+					tr
+						td: table.activity-table
+							tr
+								td(colspan=2).act-title activity.title
+								td(rowspan=3).edit-button Edit
+								td(rowspan=4).delete-button X
+							tr
+								td.act-info activity.date-created
+								td.act-info activity.duration
+							tr
+								td.act-info activity.yd
+								td.act-info activity.files.length

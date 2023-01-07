@@ -5,7 +5,7 @@
 
   #sidebar {
     width: 25vw;
-    height: 100vh;
+    height: 90vh;
     max-width: 200px;
     border-right: solid 1px grey;
   }
@@ -15,7 +15,7 @@
   }
 
   #main {
-    width: 75vw;
+    width: 73vw;
     margin-left: 10px;
   }
 
@@ -37,6 +37,21 @@
 
   #title-field {
     grid-template-columns: 100px 75px;
+  }
+
+  table.activity-table {
+    width: 90%;
+    border: solid 1px black;
+  }
+  table.activity-table .act-info {
+    min-width: 250px;
+  }
+  table.activity-table .edit-button, table.activity-table .delete-button, table.activity-table .star-button {
+    width: 200px;
+    text-align: center;
+  }
+  table.activity-table .act-title {
+    font-weight: bold;
   }
 
   .user-activity {

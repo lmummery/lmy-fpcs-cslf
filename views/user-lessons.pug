@@ -11,14 +11,15 @@ html(lang="en")
 			include sidebar
 			div#main
 				h2 My Lessons
-				div.user-activity
-					div.act-body
-						h3.act-title lesson.title
-						div.act-details
-							p.act-time lesson.duration
-							p
-							p.act-yg lesson.yg
-							p.act-files lesson.activities.length
-					div.controls
-						label Edit
-						label X
+				table
+					tr
+						td: table.activity-table
+							tr
+								td(colspan=2).act-title lesson.title
+								td(rowspan=3).edit-button Edit
+								td(rowspan=4).delete-button X
+							tr
+								td.act-info lesson.duration
+							tr
+								td.act-info lesson.yg
+								td.act-info lesson.activities.length
