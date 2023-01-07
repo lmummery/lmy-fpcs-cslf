@@ -4,7 +4,7 @@
   }
 
   #sidebar {
-    width: 25vw;
+    width: 20vw;
     height: 90vh;
     max-width: 200px;
     border-right: solid 1px grey;
@@ -15,7 +15,7 @@
   }
 
   #main {
-    width: 73vw;
+    width: 70vw;
     margin-left: 10px;
   }
 
