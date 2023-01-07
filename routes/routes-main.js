@@ -182,6 +182,7 @@ module.exports = (app, appData) =>
 	// Search form GET
 	app.get("/search", (req, res) =>
 	{
+		res.render("search", appData)
 	})
 
 	// Search form POST
