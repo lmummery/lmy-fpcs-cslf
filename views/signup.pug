@@ -12,32 +12,67 @@ html(lang="en")
 			div.selectfield
 				label(for="title") Title
 				select(name="title" id="title")
-					option(value="") (none)
-					option(value="Mx") Mx
-					option(value="Mr") Mr
-					option(value="Ms") Ms
-					option(value="Miss") Miss
-					option(value="Mrs") Mrs
-					option(value="Dr") Dr
+					each value in ["", "Mx", "Mr", "Ms", "Miss", "Mrs", "Dr"]
+						if prefill && prefill.title == value
+							option(value=value selected)= value !== "" ? value : "(none)"
+						else
+							option(value=value)= value !== "" ? value : "(none)"
+					//option(value="") (none)
+					//option(value="Mx") Mx
+					//option(value="Mr") Mr
+					//option(value="Ms") Ms
+					//option(value="Miss") Miss
+					//option(value="Mrs") Mrs
+					//option(value="Dr") Dr
 
-			div.formfield
-				label(for="firstname") First Name
-				input(type="text" name="firstname" id="firstname")
+			if prefill
+				div.formfield
+					label(for="firstname") First Name
+					input(type="text" name="firstname" id="firstname" value=prefill.firstname)
 
-			div.formfield
-				label(for="surname") Surname
-				input(type="text" name="surname" id="surname")
+				div.formfield
+					label(for="surname") Surname
+					input(type="text" name="surname" id="surname" value=prefill.surname)
 
-			div.formfield
-				label(for="username") Username
-				input(type="text" name="username" id="username")
+				div.formfield
+					label(for="email") Email
+					input(type="email" name="email" id="email" value=prefill.email)
 
-			div.formfield
-				label(for="password") Password
-				input(type="text" name="password" id="password")
+				div.formfield
+					label(for="username") Username
+					input(type="text" name="username" id="username" value=prefill.username)
 
-			div.formfield
-				label(for="conf-password") Confirm Password
-				input(type="text" name="conf-password" id="conf-password")
+				div.formfield
+					label(for="password") Password
+					input(type="password" name="password" id="password" value=prefill.password)
+
+				div.formfield
+					label(for="conf-password") Confirm Password
+					input(type="password" name="conf-password" id="conf-password")
+
+			else
+				div.formfield
+					label(for="firstname") First Name
+					input(type="text" name="firstname" id="firstname")
+
+				div.formfield
+					label(for="surname") Surname
+					input(type="text" name="surname" id="surname")
+
+				div.formfield
+					label(for="email") Email
+					input(type="email" name="email" id="email")
+
+				div.formfield
+					label(for="username") Username
+					input(type="text" name="username" id="username")
+
+				div.formfield
+					label(for="password") Password
+					input(type="password" name="password" id="password")
+
+				div.formfield
+					label(for="conf-password") Confirm Password
+					input(type="password" name="conf-password" id="conf-password")
 
 			input(type="submit" value="Sign Up")
