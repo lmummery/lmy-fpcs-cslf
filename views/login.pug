@@ -9,9 +9,14 @@ html(lang="en")
 		include header
 		h2 Log In
 		form(method="post" action="../login")
-			div.formfield
-				label(for="username") Username
-				input(type="text" name="username" id="username")
+			if prefill
+				div.formfield
+					label(for="username") Username
+					input(type="text" name="username" id="username")
+			else
+				div.formfield
+					label(for="username") Username
+					input(type="text" name="username" id="username" value=prefill.username)
 
 			div.formfield
 				label(for="password") Password
