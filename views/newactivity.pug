@@ -10,9 +10,14 @@ html(lang="en")
 		main
 			h2 New Activity
 			form(method="post" action="./newactivity")
-				div.standardfield
-					label(for="title") Title
-					input(type="text" name="title" id="title")
+				if prefill
+					div.standardfield
+						label(for="title") Title
+						input(type="text" name="title" id="title" required value=prefill.title)
+				else
+					div.standardfield
+						label(for="title") Title
+						input(type="text" name="title" id="title" required)
 
 				div#yg-field
 					label Year Groups
@@ -52,6 +57,7 @@ html(lang="en")
 						option(value=25) 25
 						option(value=30) 30
 						option(value=35) 35
+						option(value=40) 40
 					label minutes
 
 				input(type="submit" value="Submit Activity")
