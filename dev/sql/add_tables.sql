@@ -23,9 +23,11 @@ create table school (
 
 create table user (
 	id int not null auto_increment,
-	email_address varchar(345) not null,
+	email_address varchar(345) unique not null,
+	title varchar(4) not null,
 	first_name varchar(50) not null,
 	surname varchar(100) not null,
+	username varchar(100) unique not null,
 	role varchar(50),
 	phase varchar(4),
 	school_id int,
