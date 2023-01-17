@@ -4,8 +4,14 @@ Route handler for CS Lesson Factory web app
 
 module.exports = (app, appData) =>
 {
-	const {body} = require("express-validator")
+	const {body, validationResult} = require("express-validator")
 
+	/**
+	 * Redirect to the user's details page if they are currently logged in
+	 * @param req {Object} The HTTP request object
+	 * @param res {Object} The HTTP response object
+	 * @param next {Object} A callback function to be called after this function's completion
+	 */
 	function redirectIfLoggedIn (req, res, next)
 	{
 		next()
@@ -14,6 +20,12 @@ module.exports = (app, appData) =>
 		else next()
 	}
 
+	/**
+	 * Redirect to the login page if a user is not currently logged in
+	 * @param req {Object} The HTTP request object
+	 * @param res {Object} The HTTP response object
+	 * @param next {Object} A callback function to be called after this function's completion
+	 */
 	function redirectIfNotLoggedIn (req, res, next)
 	{
 		next()
@@ -22,10 +34,14 @@ module.exports = (app, appData) =>
 		else next()
 	}
 
+	/**
+	 * Check that a user is currently logged in, regardless of who
+	 * @param req {Object} The HTTP request object
+	 * @returns {boolean} true if a user is logged in, false otherwise
+	 */
 	function isUserLoggedIn (req)
 	{
 		return !! req.session.user;
-
 	}
 
 	// Index route
@@ -155,7 +171,7 @@ module.exports = (app, appData) =>
 	// Signup form POST
 	const userDetailsValidation = [
 		body("username").notEmpty(), body("firstname").notEmpty(),
-		body("surname").notEmpty(),
+		body("surname").notEmpty(), body("email").isEmail(),
 		body("password").isStrongPassword({
 			minLength: 8,
 			minLowercase: 1,
@@ -166,6 +182,68 @@ module.exports = (app, appData) =>
 	]
 	app.post("/signup", redirectIfLoggedIn, userDetailsValidation, (req, res) =>
 	{
+		const errors = validationResult(req)
+
+		// If there are any validation errors, report them with the re-sent form
+		if (! errors.isEmpty())
+		{
+			let prefill = {
+				title: req.body.title,
+				firstname: req.sanitize(req.body.firstname),
+				surname: req.sanitize(req.body.surname),
+				email: req.sanitize(req.body.email),
+				username: req.sanitize(req.body.username)
+			}
+
+			let data = Object.assign({}, appData, {prefill: prefill}, {msg: "Validation error"})
+			data.userLoggedIn = isUserLoggedIn(req)
+			res.render("signup", data)
+		}
+
+		else
+		{
+			// Sanitise inputs
+			req.body.firstname = req.sanitize(req.body.firstname)
+			req.body.surname = req.sanitize(req.body.surname)
+			req.body.email = req.sanitize(req.body.email)
+			req.body.username = req.sanitize(req.body.username)
+
+			// Import bcrypt to hash passwords
+			const bcrypt = require("bcrypt")
+			const saltRounds = 10
+
+			bcrypt.hash(req.body.password, saltRounds, (err, hash) =>
+			{
+				let query = `insert into user (email_address, title, first_name, surname, username, passwordHash)
+							values (?, ?, ?, ?, ?, ?)`
+				let args = [req.body.email, req.body.title, req.body.firstname, req.body.surname, req.body.username, hash]
+
+				db.query(query, args, err =>
+				{
+					if (err)
+					{
+						let prefill = {
+							firstname: req.sanitize(req.body.firstname),
+							surname: req.sanitize(req.body.surname),
+							email: req.sanitize(req.body.email),
+							username: req.sanitize(req.body.username)
+						}
+
+						let data = Object.assign({}, appData, {prefill: prefill}, {msg: "Something went wrong"})
+						data.userLoggedIn = isUserLoggedIn(req)
+						res.render("signup", data)
+					}
+					else
+					{
+						// Successful registration
+						req.session.user = req.body.username
+
+						// TODO - current redirect to index when user signs up
+						res.redirect("../")
+					}
+				})
+			})
+		}
 	})
 
 	// User details form GET

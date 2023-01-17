@@ -42,14 +42,6 @@ html(lang="en")
 					label(for="username") Username
 					input(type="text" name="username" id="username" value=prefill.username)
 
-				div.formfield
-					label(for="password") Password
-					input(type="password" name="password" id="password" value=prefill.password)
-
-				div.formfield
-					label(for="conf-password") Confirm Password
-					input(type="password" name="conf-password" id="conf-password")
-
 			else
 				div.formfield
 					label(for="firstname") First Name
@@ -67,12 +59,16 @@ html(lang="en")
 					label(for="username") Username
 					input(type="text" name="username" id="username")
 
-				div.formfield
-					label(for="password") Password
-					input(type="password" name="password" id="password")
+			// Password fields are always empty when the page loads
+			div.formfield
+				label(for="password") Password
+				input(type="password" name="password" id="password")
 
-				div.formfield
-					label(for="conf-password") Confirm Password
-					input(type="password" name="conf-password" id="conf-password")
+			div.formfield
+				label(for="conf-password") Confirm Password
+				input(type="password" name="conf-password" id="conf-password")
+
+			if msg
+				div.msg: p= msg
 
 			input(type="submit" value="Sign Up")
