@@ -47,13 +47,15 @@ module.exports = (app, appData) =>
 	// Index route
 	app.get("/", (req, res) =>
 	{
-		res.render("index", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("index", data)
 	})
 
 	// New lesson form GET
 	app.get("/newlesson", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("newlesson", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("newlesson", data)
 	})
 
 	// New lesson form POST
@@ -69,7 +71,8 @@ module.exports = (app, appData) =>
 	// New activity form GET
 	app.get("/newactivity", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("newactivity", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("newactivity", data)
 	})
 
 	// New activity form POST
@@ -84,13 +87,14 @@ module.exports = (app, appData) =>
 	// Activity page
 	app.get("/activity/:id", (req, res) =>
 	{
-		res.render("activity", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("activity", data)
 	})
 
 	// Activity edit form GET
 	app.get("/activity/:id/edit", redirectIfNotLoggedIn, (req, res) =>
-	{
-		res.render("activity-edit", appData)
+	{let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("activity-edit", data)
 	})
 
 	// Activity edit form PUT
@@ -101,7 +105,8 @@ module.exports = (app, appData) =>
 	// Lesson generator form GET
 	app.get("/generator", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("generator", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("generator", data)
 	})
 
 	// Lesson generator form POST
@@ -115,13 +120,15 @@ module.exports = (app, appData) =>
 	// Lesson page
 	app.get("/lesson/:id", (req, res) =>
 	{
-		res.render("lesson", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("lesson", data)
 	})
 
 	// Lesson edit form GET
 	app.get("/lesson/:id/edit", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("lesson-edit", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("lesson-edit", data)
 	})
 
 	// Lesson edit form PUT
@@ -133,19 +140,22 @@ module.exports = (app, appData) =>
 	// User activities page
 	app.get("/myactivities", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("user-activities", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("user-activities", data)
 	})
 
 	// User favourite activities page
 	app.get("/favourites", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("user-favourites", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("user-favourites", data)
 	})
 
 	// User lessons page
 	app.get("/mylessons", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("user-lessons", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("user-lessons", data)
 	})
 
 	// Login form GET
@@ -230,7 +240,8 @@ module.exports = (app, appData) =>
 	// Signup form GET
 	app.get("/signup", redirectIfLoggedIn, (req, res) =>
 	{
-		res.render("signup", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("signup", data)
 	})
 
 	// Signup form POST
@@ -311,10 +322,17 @@ module.exports = (app, appData) =>
 		}
 	})
 
+	app.get("/logout", redirectIfNotLoggedIn, (req, res) =>
+	{
+		delete req.session.user
+		res.redirect("../")
+	})
+
 	// User details form GET
 	app.get("/mydetails", redirectIfNotLoggedIn, (req, res) =>
 	{
-		res.render("user-details", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("user-details", data)
 	})
 
 	// User details form PUT
@@ -325,7 +343,8 @@ module.exports = (app, appData) =>
 	// Search form GET
 	app.get("/search", (req, res) =>
 	{
-		res.render("search", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("search", data)
 	})
 
 	// Search form POST
@@ -333,9 +352,15 @@ module.exports = (app, appData) =>
 	{
 	})
 
+	app.delete("/delete", (req, res) =>
+	{
+		res.send("User deletion")
+	})
+
 	// Catch-all route, used for 404 errors
 	app.get("*", (req, res) =>
 	{
-		res.render("error", appData)
+		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
+		res.render("error", data)
 	})
 }
