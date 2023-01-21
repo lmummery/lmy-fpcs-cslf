@@ -30,7 +30,7 @@ module.exports = (app, appData) =>
 	{
 		next()
 		return
-		if (! req.session.user) res.redirect("../login")
+		if (! req.session.user) res.redirect(`../login?url=${req.url}`)
 		else next()
 	}
 
@@ -151,7 +151,13 @@ module.exports = (app, appData) =>
 	// Login form GET
 	app.get("/login", redirectIfLoggedIn, (req, res) =>
 	{
-		res.render("login", appData)
+		let data = Object.assign({}, appData)
+		data.userLoggedIn = isUserLoggedIn(req)
+		if (req.query.url)
+		{
+			data.url = req.query.url
+		}
+		res.render("login", data)
 	})
 
 	// Login form POST
@@ -160,6 +166,65 @@ module.exports = (app, appData) =>
 	]
 	app.post("/login", redirectIfLoggedIn, loginValidation, (req, res) =>
 	{
+		const errors = validationResult(req)
+
+		if (! errors.isEmpty())
+		{
+			let prefill = {
+				username: req.sanitize(req.body.username)
+			}
+
+			let data = Object.assign({}, {prefill: prefill, msg: "Enter a username and password"})
+			data.userLoggedIn = isUserLoggedIn(req)
+			res.render("login", data)
+		}
+		else
+		{
+			// Import bcrypt to compare passwords
+			const bcrypt = require("bcrypt")
+
+			// Sanitise input
+			req.body.username = req.sanitize(req.body.username)
+			let prefill = {username: req.body.username}
+
+			// Get the existing password hash to compare with form input
+			let query = `select passwordHash from user where username = ?`
+			db.query(query, req.body.username, (err, result) =>
+			{
+				if (err || result.length <= 0)
+				{
+					let data = Object.assign({}, appData, {prefill: prefill, msg: "User not found"})
+					res.render("login", data)
+				}
+				else
+				{
+					const storedHash = result[0].passwordHash
+					bcrypt.compare(req.body.password, storedHash, (err, result) =>
+					{
+						if (err || ! result)
+						{
+							let data = Object.assign({}, appData, {prefill: prefill, msg: "Incorrect password"})
+							data.userLoggedIn = isUserLoggedIn(req)
+							res.render("login", data)
+						}
+						else
+						{
+							req.session.user = req.body.username
+							// If the user was redirected to login from somewhere else, send them back there
+							if (req.body.url)
+							{
+								res.redirect(`..{req.body.url}`)
+							}
+							else
+							{
+								// TODO - temp redirect to index on successful login
+								res.redirect("../")
+							}
+						}
+					})
+				}
+			})
+		}
 	})
 
 	// Signup form GET
