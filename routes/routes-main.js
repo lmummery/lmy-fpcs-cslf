@@ -2,7 +2,7 @@
 Route handler for CS Lesson Factory web app
  */
 
-module.exports = (app, appData) =>
+module.exports = (app, appData, upload) =>
 {
 	const {body, validationResult} = require("express-validator")
 
@@ -28,8 +28,6 @@ module.exports = (app, appData) =>
 	 */
 	function redirectIfNotLoggedIn (req, res, next)
 	{
-		next()
-		return
 		if (! req.session.user) res.redirect(`../login?url=${req.url}`)
 		else next()
 	}
@@ -80,8 +78,98 @@ module.exports = (app, appData) =>
 		body("title").notEmpty(), body("duration").isInt(),
 		body("description").notEmpty()
 	]
-	app.post("/newactivity", redirectIfNotLoggedIn, activityValidation, (req, res) =>
+	// TODO - multer not accepting uploads
+	app.post("/newactivity", upload.fields([{name: "files"}]), redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
+		console.debug(`REQ.BODY.FILES = ${req.body.files}`)
+		const errors = validationResult(req)
+
+		// Convert the year group fields to Boolean values
+		req.body.y1 = req.body.y1 === "on"
+		req.body.y2 = req.body.y2 === "on"
+		req.body.y3 = req.body.y3 === "on"
+		req.body.y4 = req.body.y4 === "on"
+		req.body.y5 = req.body.y5 === "on"
+		req.body.y6 = req.body.y6 === "on"
+
+		if (! errors.isEmpty())
+		{
+			let prefill = {
+				title: req.sanitize(req.body.title),
+				years: {y1: req.body.y1, y2: req.body.y2, y3: req.body.y3,
+					y4: req.body.y4, y5: req.body.y5, y6: req.body.y6}
+			}
+
+			let data = Object.assign({}, appData, {prefill: prefill})
+			data.user = isUserLoggedIn(req)
+			res.render("newactivity", data)
+		}
+		else
+		{
+			// Sanitise inputs
+			req.body.title = req.sanitize(req.body.title)
+			req.body.tags = req.sanitize(req.body.tags)
+			req.body.description = req.sanitize(req.body.description)
+
+			let query = `insert into activity (title, creator, description, year1, year2, year3, year4, year5, year6)
+						 values (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			let args = [req.body.title, req.session.user, req.body.description, req.body.y1, req.body.y2, req.body.y3, req.body.y4, req.body.y5, req.body.y6]
+			// Insert into activity
+			db.query(query, args, (err, result1) =>
+			{
+				if (err)
+				{
+					console.error(err)
+					// TODO - better redirection for error in activity insert
+					res.redirect("../newactivity")
+				}
+				else
+				{
+					// Store the id of the newly inserted record for the join table
+					const actId = result1.insertId
+					// TODO - will need stored procedure for inserting resources
+
+					// Insert each file into the resource table
+					console.debug(`REQ.FILES = ${req.files}`)
+					for (let file of req.files)
+					{
+						// Delcared inside the loop because it will be re-declared in a further callback
+						query = `insert into resource (filetype, filename, filepath)
+							 values (?, ?, ?)`
+						args = [file.mimetype, file.filename, file.path]
+						db.query(query, args, (err, result2) =>
+						{
+							if (err)
+							{
+								console.error(err)
+								// TODO - better redirection for error in resource insert
+								res.redirect("../newactivity")
+							} else
+							{
+								// Store the id of the newly inserted record for the join table
+								const resId = result2.insertId
+
+								query = `insert into activity_resource (activity_id, resource_id)
+									 values (?, ?)`
+								args = [actId, resId]
+								db.query(query, args, err =>
+								{
+									if (err)
+									{
+										console.error(err)
+										// TODO - better redirection for error in act_res insert
+										res.redirect("../newactivity")
+									}
+									// Nothing needs to be done if no error
+								})
+							}
+						})
+					}
+					// Redirect to the activity page on successful upload
+					res.redirect(`../activity/${actId}`)
+				}
+			})
+		}
 	})
 
 	// Activity page
@@ -223,7 +311,7 @@ module.exports = (app, appData) =>
 							// If the user was redirected to login from somewhere else, send them back there
 							if (req.body.url)
 							{
-								res.redirect(`..{req.body.url}`)
+								res.redirect(`..${req.body.url}`)
 							}
 							else
 							{

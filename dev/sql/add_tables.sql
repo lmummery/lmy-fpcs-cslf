@@ -39,9 +39,8 @@ create table user (
 create table activity (
 	id int not null auto_increment,
 	title varchar(100) not null,
-	creator int not null,
+	creator varchar(100) not null,
 	description mediumtext,
-	eyfs boolean,
 	year1 boolean,
 	year2 boolean,
 	year3 boolean,
@@ -49,7 +48,7 @@ create table activity (
 	year5 boolean,
 	year6 boolean,
 	primary key (id),
-	foreign key (creator) references user (id)
+	foreign key (creator) references user (username)
 );
 
 create table lesson (

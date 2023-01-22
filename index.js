@@ -12,9 +12,13 @@ const validator = require("express-validator")
 const sanitizer = require("express-sanitizer")
 const docx = require("docx")
 const convtopdf = require("convert-multiple-files-ul")
-const multer = require("multer")
 const bcrypt = require("bcrypt")
 const zip = require("adm-zip")
+
+// multer will be used for processing files uploaded in forms
+const multer = require("multer")
+// uploaded files will be stored in ~/uploads/uploads
+const upload = multer({dest: "uploads/uploads/"})
 
 // Define the port for the web app to run through
 const port = 8000
@@ -85,7 +89,7 @@ app.use(session(
 app.use(sanitizer())
 
 // Require routes-main.js from routes to handle Express routing, passing the Express app object and base data
-require("./routes/routes-main")(app, appData)
+require("./routes/routes-main")(app, appData, upload)
 
 // Start the web app listening on the set port
 app.listen(port, () => console.log(`CS Lesson Factory listening on port ${port}`))
