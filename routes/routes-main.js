@@ -75,13 +75,12 @@ module.exports = (app, appData, upload) =>
 
 	// New activity form POST
 	const activityValidation = [
-		body("title").notEmpty(), body("duration").isInt(),
+		body("title").notEmpty(),
 		body("description").notEmpty()
 	]
 	// TODO - multer not accepting uploads
-	app.post("/newactivity", upload.fields([{name: "files"}]), redirectIfNotLoggedIn, activityValidation, (req, res) =>
+	app.post("/newactivity", upload.array("files"), redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
-		console.debug(`REQ.BODY.FILES = ${req.body.files}`)
 		const errors = validationResult(req)
 
 		// Convert the year group fields to Boolean values
@@ -94,6 +93,8 @@ module.exports = (app, appData, upload) =>
 
 		if (! errors.isEmpty())
 		{
+			console.debug(errors.array())
+
 			let prefill = {
 				title: req.sanitize(req.body.title),
 				years: {y1: req.body.y1, y2: req.body.y2, y3: req.body.y3,
@@ -111,15 +112,16 @@ module.exports = (app, appData, upload) =>
 			req.body.tags = req.sanitize(req.body.tags)
 			req.body.description = req.sanitize(req.body.description)
 
-			let query = `insert into activity (title, creator, description, year1, year2, year3, year4, year5, year6)
-						 values (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-			let args = [req.body.title, req.session.user, req.body.description, req.body.y1, req.body.y2, req.body.y3, req.body.y4, req.body.y5, req.body.y6]
+			let query = `insert into activity (title, creator, description, year1, year2, year3, year4, year5, year6, duration)
+						 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			let args = [req.body.title, req.session.user, req.body.description, req.body.y1, req.body.y2, req.body.y3, req.body.y4, req.body.y5, req.body.y6, req.body.duration]
 			// Insert into activity
 			db.query(query, args, (err, result1) =>
 			{
 				if (err)
 				{
-					console.error(err)
+					console.log(err)
+					console.log("Redirecting from activity insert")
 					// TODO - better redirection for error in activity insert
 					res.redirect("../newactivity")
 				}
@@ -130,40 +132,44 @@ module.exports = (app, appData, upload) =>
 					// TODO - will need stored procedure for inserting resources
 
 					// Insert each file into the resource table
-					console.debug(`REQ.FILES = ${req.files}`)
-					for (let file of req.files)
+					if (req.files)
 					{
-						// Delcared inside the loop because it will be re-declared in a further callback
-						query = `insert into resource (filetype, filename, filepath)
-							 values (?, ?, ?)`
-						args = [file.mimetype, file.filename, file.path]
-						db.query(query, args, (err, result2) =>
+						for (let file of req.files)
 						{
-							if (err)
+							// Delcared inside the loop because it will be re-declared in a further callback
+							query = `insert into resource (filetype, filename, filepath)
+								 values (?, ?, ?)`
+							args = [file.mimetype, file.filename, file.path]
+							db.query(query, args, (err, result2) =>
 							{
-								console.error(err)
-								// TODO - better redirection for error in resource insert
-								res.redirect("../newactivity")
-							} else
-							{
-								// Store the id of the newly inserted record for the join table
-								const resId = result2.insertId
-
-								query = `insert into activity_resource (activity_id, resource_id)
-									 values (?, ?)`
-								args = [actId, resId]
-								db.query(query, args, err =>
+								if (err)
 								{
-									if (err)
+									console.log(err)
+									console.log("Redirecting from resource insert")
+									// TODO - better redirection for error in resource insert
+									res.redirect("../newactivity")
+								} else
+								{
+									// Store the id of the newly inserted record for the join table
+									const resId = result2.insertId
+
+									query = `insert into activity_resource (activity_id, resource_id)
+									 values (?, ?)`
+									args = [actId, resId]
+									db.query(query, args, err =>
 									{
-										console.error(err)
-										// TODO - better redirection for error in act_res insert
-										res.redirect("../newactivity")
-									}
-									// Nothing needs to be done if no error
-								})
-							}
-						})
+										if (err)
+										{
+											console.log(err)
+											console.log("Redirecting from act_res insert")
+											// TODO - better redirection for error in act_res insert
+											res.redirect("../newactivity")
+										}
+										// Nothing needs to be done if no error
+									})
+								}
+							})
+						}
 					}
 					// Redirect to the activity page on successful upload
 					res.redirect(`../activity/${actId}`)
@@ -175,8 +181,24 @@ module.exports = (app, appData, upload) =>
 	// Activity page
 	app.get("/activity/:id", (req, res) =>
 	{
-		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("activity", data)
+		let query = `select *
+					 from activity
+					 where id = ?
+					 limit 1`
+		db.query(query, req.params.id, (err, result) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				// TODO - temp redirect to search on activity retrieval error
+				res.redirect("../search")
+			}
+			else
+			{
+				let data = Object.assign({}, appData, {activity: result[0]}, {user: isUserLoggedIn(req)})
+				res.render("activity", data)
+			}
+		})
 	})
 
 	// Activity edit form GET

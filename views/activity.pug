@@ -2,20 +2,20 @@ doctype html
 
 html(lang="en")
 	head
-		title Activity
+		title= activity.title
 		include head
 		link(rel="stylesheet" href="../css/activity-lesson-styles.css")
 	body
 		include header
-		h2 Activity Title
+		h2= activity.title
 		div.activity-description
 			h3 Activity Description
-			p Activity description
+			p= activity.description
 
 		div.activity-details
 			h3 Activity Details
-			p Activity years
-			p Activity duration
+			p= getStr(activity.year1, activity.year2, activity.year3, activity.year4, activity.year5, activity.year6)
+			p #{activity.duration} minutes
 
 		div.activity-files
 			h3 Activity Files
@@ -25,3 +25,61 @@ html(lang="en")
 					td.filename filename
 					td.filesize filesize
 					td.download ↓
+
+-
+	function getStr (y1, y2, y3, y4, y5, y6)
+	{
+		let years = [y1, y2, y3, y4, y5, y6]
+		let count = 0
+		years.forEach(yr =>
+		{
+			if (yr) count++
+		})
+
+		if (count === 1)
+		{
+			return `Year ${years.indexOf(1) + 1}`
+		}
+		else if (count === 2)
+		{
+			let str = ""
+			for (let i = 0; i < 6; i ++)
+			{
+				if (years[i] === 1)
+				{
+					if (str === "")
+					{
+						str += `Years ${i + 1}`
+					}
+					else
+					{
+						str += ` and ${i + 1}`
+						return str
+					}
+				}
+			}
+		}
+		else
+		{
+			let actualYears = []
+			for (let i = 0; i < 6; i ++)
+			{
+				if (years[i] === 1) actualYears.push(i + 1)
+			}
+
+			let str = "Years "
+			for (let i = 0; i < actualYears.length; i ++)
+			{
+				if (i === actualYears.length - 1)
+				{
+					str += " and "
+				}
+				str += actualYears[i]
+				if (i < actualYears.length - 2)
+				{
+					str += ", "
+				}
+			}
+			return str
+		}
+	}

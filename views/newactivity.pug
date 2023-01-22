@@ -9,7 +9,7 @@ html(lang="en")
 		include header
 		main
 			h2 New Activity
-			form(method="post" action="./newactivity")
+			form(method="post" action="./newactivity" enctype="multipart/form-data")
 				if prefill
 					div.standardfield
 						label(for="title") Title
@@ -17,17 +17,17 @@ html(lang="en")
 
 					div#yg-field
 						label Year Groups
-						input(type="checkbox" name="y1" id="y1-select" selected=prefill.years.y1)
+						input(type="checkbox" name="y1" id="y1-select" checked=prefill.years.y1)
 						label(for="y1-select") Year 1
-						input(type="checkbox" name="y1" id="y2-select" selected=prefill.years.y2)
+						input(type="checkbox" name="y2" id="y2-select" checked=prefill.years.y2)
 						label(for="y2-select") Year 2
-						input(type="checkbox" name="y3" id="y3-select" selected=prefill.years.y3)
+						input(type="checkbox" name="y3" id="y3-select" checked=prefill.years.y3)
 						label(for="y3-select") Year 3
-						input(type="checkbox" name="y4" id="y4-select" selected=prefill.years.y4)
+						input(type="checkbox" name="y4" id="y4-select" checked=prefill.years.y4)
 						label(for="y4-select") Year 4
-						input(type="checkbox" name="y5" id="y5-select" selected=prefill.years.y5)
+						input(type="checkbox" name="y5" id="y5-select" checked=prefill.years.y5)
 						label(for="y5-select") Year 5
-						input(type="checkbox" name="y6" id="y6-select" selected=prefill.years.y6)
+						input(type="checkbox" name="y6" id="y6-select" checked=prefill.years.y6)
 						label(for="y6-select") Year 6
 				else
 					div.standardfield
