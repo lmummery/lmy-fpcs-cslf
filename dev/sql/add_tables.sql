@@ -47,6 +47,7 @@ create table activity (
 	year4 boolean,
 	year5 boolean,
 	year6 boolean,
+	duration int,
 	primary key (id),
 	foreign key (creator) references user (username)
 );
@@ -56,6 +57,7 @@ create table lesson (
 	date_created date not null,
 	time_created time not null,
 	user_id int not null,
+	duration int default 60,
 	primary key (id),
 	foreign key (user_id) references user (id)
 );
