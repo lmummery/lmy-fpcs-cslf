@@ -17,8 +17,25 @@ const zip = require("adm-zip")
 
 // multer will be used for processing files uploaded in forms
 const multer = require("multer")
-// uploaded files will be stored in ~/uploads/uploads
-const upload = multer({dest: "uploads/uploads/"})
+// Uploaded files will be stored in ~/uploads/uploads
+// Adapted from http://expressjs.com/en/resources/middleware/multer.html
+const storage = multer.diskStorage({
+	destination: "uploads/uploads/", // Where to store the files
+	filename: (req, file, cb) =>
+	{
+		let suffix = ""
+		// Suffix will be 10 digits in base 32
+		for (let i = 0; i < 10; i ++)
+		{
+			suffix += "0123456789ABCDEFGHIJKLMNOPQRSTUV".charAt(Math.floor(Math.random() * 32))
+		}
+		suffix += "."
+		const fileNameSplit = file.originalname.split(".")
+		const fileNameWithoutExt = fileNameSplit.slice(0, fileNameSplit.length - 1).join(".")
+		cb(null, fileNameWithoutExt + suffix + fileNameSplit[fileNameSplit.length - 1])
+	}
+})
+const upload = multer({storage: storage})
 
 // Define the port for the web app to run through
 const port = 8000

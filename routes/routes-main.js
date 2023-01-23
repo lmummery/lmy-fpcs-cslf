@@ -6,6 +6,10 @@ module.exports = (app, appData, upload) =>
 {
 	const {body, validationResult} = require("express-validator")
 
+	/*
+	== UTILITY FUNCTIONS ==
+	 */
+
 	/**
 	 * Redirect to the user's details page if they are currently logged in
 	 * @param req {Object} The HTTP request object
@@ -41,6 +45,10 @@ module.exports = (app, appData, upload) =>
 	{
 		return !! req.session.user;
 	}
+
+	/*
+	== ROUTES ==
+	 */
 
 	// Index route
 	app.get("/", (req, res) =>
@@ -137,9 +145,9 @@ module.exports = (app, appData, upload) =>
 						for (let file of req.files)
 						{
 							// Delcared inside the loop because it will be re-declared in a further callback
-							query = `insert into resource (filetype, filename, filepath)
-								 values (?, ?, ?)`
-							args = [file.mimetype, file.filename, file.path]
+							query = `insert into resource (filetype, filename, filepath, filesize, originalname, extension)
+								 values (?, ?, ?, ?, ?, ?)`
+							args = [file.mimetype, file.filename, file.path, file.size, file.originalname, require("./util").getFileExt(file.mimetype)]
 							db.query(query, args, (err, result2) =>
 							{
 								if (err)
@@ -187,7 +195,7 @@ module.exports = (app, appData, upload) =>
 					 limit 1`
 		db.query(query, req.params.id, (err, result) =>
 		{
-			if (err)
+			if (err || result.length <= 0)
 			{
 				console.error(err)
 				// TODO - temp redirect to search on activity retrieval error
@@ -195,8 +203,29 @@ module.exports = (app, appData, upload) =>
 			}
 			else
 			{
-				let data = Object.assign({}, appData, {activity: result[0]}, {user: isUserLoggedIn(req)})
-				res.render("activity", data)
+				// Get all the resource files associated with the activity
+				query = `select *
+						 from resource r
+                         join activity_resource ar
+                         on r.id = ar.resource_id
+                         join activity a
+                         on ar.activity_id = a.id
+                         where a.id = ?`
+
+				db.query(query, req.params.id, (err, results) =>
+				{
+					if (err)
+					{
+						console.error(err)
+						// TODO - temp redirect to search for error in act_res -> resource get
+						res.redirect("../search")
+					}
+					else
+					{
+						let data = Object.assign({}, appData, {activity: result[0], resources: results}, {user: isUserLoggedIn(req)})
+						res.render("activity", data)
+					}
+				})
 			}
 		})
 	})
