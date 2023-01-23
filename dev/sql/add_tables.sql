@@ -81,9 +81,10 @@ create table starred_activity (
 
 create table resource (
 	id int not null auto_increment,
-	filetype varchar(50) not null,
+	filetype varchar(100) not null,
 	filename varchar(250) not null,
 	filepath varchar(300) not null,
+	filesize int not null default 0,
 	primary key (id)
 );
 
