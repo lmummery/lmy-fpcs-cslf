@@ -83,7 +83,9 @@ create table resource (
 	id int not null auto_increment,
 	filetype varchar(100) not null,
 	filename varchar(250) not null,
+	originalname varchar(250) not null,
 	filepath varchar(300) not null,
+	extension varchar(10) not null,
 	filesize int not null default 0,
 	primary key (id)
 );
