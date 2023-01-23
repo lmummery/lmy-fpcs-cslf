@@ -2,6 +2,16 @@ doctype html
 
 html(lang="en")
 	head
+		title Search
 		include head
 	body
 		include header
+		main
+			h2 Search
+			form(method="post" action="../search")
+				label(for="query") Search for:
+					|
+					|
+				input(type="text" name="query" id="query" required)
+
+				input(type="submit" value="Search")
