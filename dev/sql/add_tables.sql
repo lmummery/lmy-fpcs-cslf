@@ -48,6 +48,7 @@ create table activity (
 	year5 boolean,
 	year6 boolean,
 	duration int,
+	actzip varchar(300) default null,
 	primary key (id),
 	foreign key (creator) references user (username)
 );

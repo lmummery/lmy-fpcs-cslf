@@ -19,7 +19,7 @@ html(lang="en")
 
 		div.activity-files
 			h3 Activity Files
-			button() Download All
+			button: a(href=activity.actzip download) Download All
 			table#activity-files
 				tr.file
 					td.filename filename
@@ -29,7 +29,7 @@ html(lang="en")
 					tr.file
 						td.filename= res.originalname
 						td.filesize= res.filesize
-						td.download ↓
+						td.download: a(href=res.filepath download) Download ↓
 
 -
 	function getStr (y1, y2, y3, y4, y5, y6)

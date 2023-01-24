@@ -5,6 +5,8 @@ Route handler for CS Lesson Factory web app
 module.exports = (app, appData, upload) =>
 {
 	const {body, validationResult} = require("express-validator")
+	const Zip = require("adm-zip")
+	const fs = require("fs")
 
 	/*
 	== UTILITY FUNCTIONS ==
@@ -179,6 +181,46 @@ module.exports = (app, appData, upload) =>
 							})
 						}
 					}
+
+					// Create a zip file of all files
+					let zip = new Zip()
+					for (const file of req.files)
+					{
+						zip.addLocalFile(file.path)
+					}
+					// Suffix will be a 10 digit string in base 64
+					let suffix = ""
+					const base64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
+					for (let i = 0; i < 10; i ++)
+					{
+						suffix += base64.charAt(Math.floor(Math.random() * 64))
+					}
+					const filename = `${req.body.title.replaceAll(" ", "+")}_${suffix}.zip`
+					const outPath = `genFiles/genFiles/${filename}`
+					zip.writeZip(filename, () =>
+					{
+						fs.rename(filename, outPath, err =>
+						{
+							if (err)
+							{
+								throw err
+							}
+
+							// Update the activity record to point to the zip file
+							query = `update activity
+							         set actzip = ?
+							         where id = ?`
+							args = [outPath, actId]
+							db.query(query, args, err =>
+							{
+								if (err)
+								{
+									throw err
+								}
+							})
+						})
+					})
+
 					// Redirect to the activity page on successful upload
 					res.redirect(`../activity/${actId}`)
 				}
