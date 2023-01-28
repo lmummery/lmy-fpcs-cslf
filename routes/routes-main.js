@@ -122,9 +122,9 @@ module.exports = (app, appData, upload) =>
 			req.body.tags = req.sanitize(req.body.tags)
 			req.body.description = req.sanitize(req.body.description)
 
-			let query = `insert into activity (title, creator, description, year1, year2, year3, year4, year5, year6, duration)
-						 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-			let args = [req.body.title, req.session.user, req.body.description, req.body.y1, req.body.y2, req.body.y3, req.body.y4, req.body.y5, req.body.y6, req.body.duration]
+			let query = `insert into activity (title, creator, description, tags, year1, year2, year3, year4, year5, year6, duration)
+						 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			let args = [req.body.title, req.session.user, req.body.description, req.body.tags, req.body.y1, req.body.y2, req.body.y3, req.body.y4, req.body.y5, req.body.y6, req.body.duration]
 			// Insert into activity
 			db.query(query, args, (err, result1) =>
 			{
@@ -273,14 +273,92 @@ module.exports = (app, appData, upload) =>
 	})
 
 	// Activity edit form GET
-	app.get("/activity/:id/edit", redirectIfNotLoggedIn, (req, res) =>
-	{let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("activity-edit", data)
+	app.get("/activityedit/:id", redirectIfNotLoggedIn, (req, res) =>
+	{
+		// Select data to prefill page
+		let query = `select *
+					 from activity
+					 where id = ?
+					 limit 1`
+		db.query(query, req.params.id, (err, result) =>
+		{
+			if (err)
+			{
+				res.redirect(`../activity/${req.params.id}`)
+			}
+			else
+			{
+				const activity = result[0]
+				// Only the activity's creator can access the edit page; redirect away if the user is not the creator
+				if (req.session.user !== activity.creator)
+				{
+					console.error(err)
+					res.redirect(`../activity/${req.params.id}`)
+				}
+				else
+				{
+					// Get the activity's resources
+					query = `select *
+							 from resource r
+							 join activity_resource ar
+							 on ar.resource_id = r.id
+							 join activity a
+							 on ar.activity_id = a.id
+							 where activity_id = ?`
+					db.query(query, req.params.id, (err, results) =>
+					{
+						if (err)
+						{
+							console.error(err)
+							res.redirect(`../activity/${req.params.id}`)
+						}
+						else
+						{
+							results.forEach(r => r.fileTypeStr = require("./util").getFileStr(r.filetype))
+
+							let data = Object.assign({}, appData, {activity: activity, resources: results}, {user: isUserLoggedIn(req)})
+							res.render("activity-edit", data)
+						}
+					})
+				}
+			}
+		})
 	})
 
-	// Activity edit form PUT
-	app.put("/activity/:id/edit", redirectIfNotLoggedIn, activityValidation, (req, res) =>
+	// Activity edit form POST
+	app.post("/activityedit/:id", upload.array("files"), redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
+		const errors = validationResult(req)
+
+		if (! errors.isEmpty())
+		{
+			let activity = {
+				id: req.body.id,
+				title: req.sanitize(req.body.title),
+				year1: req.body.y1 === "on",
+				year2: req.body.y2 === "on",
+				year3: req.body.y3 === "on",
+				year4: req.body.y4 === "on",
+				year5: req.body.y5 === "on",
+				year6: req.body.y6 === "on",
+				tags: req.sanitize(req.body.tags),
+				description: req.sanitize(req.body.description),
+				duration: req.body.duration
+			}
+
+			let resources = req.files
+
+			let data = Object.assign({}, appData, {activity: activity, resources: resources})
+			data.user = isUserLoggedIn(req)
+			res.render("activity-edit", data)
+		}
+		else
+		{
+			// Don't actually edit anything for now, just print the req body and redirect to the activity page
+			console.log(req.body)
+			console.log(req.files)
+			res.redirect(`../activity/${req.params.id}`)
+		}
 	})
 
 	// Lesson generator form GET
@@ -306,14 +384,14 @@ module.exports = (app, appData, upload) =>
 	})
 
 	// Lesson edit form GET
-	app.get("/lesson/:id/edit", redirectIfNotLoggedIn, (req, res) =>
+	app.get("/lessonedit/:id", redirectIfNotLoggedIn, (req, res) =>
 	{
 		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
 		res.render("lesson-edit", data)
 	})
 
-	// Lesson edit form PUT
-	app.put("/lesson/:id/edit", lessonValidation, redirectIfNotLoggedIn, (req, res) =>
+	// Lesson edit form POST
+	app.post("/lessonedit/:id", lessonValidation, redirectIfNotLoggedIn, (req, res) =>
 	{
 
 	})
@@ -533,7 +611,7 @@ module.exports = (app, appData, upload) =>
 	{
 	})
 
-	app.delete("/delete", (req, res) =>
+	app.post("/delete", (req, res) =>
 	{
 		res.send("User deletion")
 	})

@@ -41,6 +41,7 @@ create table activity (
 	title varchar(100) not null,
 	creator varchar(100) not null,
 	description mediumtext,
+	tags varchar(500),
 	year1 boolean,
 	year2 boolean,
 	year3 boolean,

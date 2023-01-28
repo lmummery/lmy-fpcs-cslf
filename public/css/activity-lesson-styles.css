@@ -36,6 +36,12 @@
     grid-template-columns: 75px 75px 100px;
   }
 
+  .file-table {
+    border: solid 1pt black;
+    padding-bottom: 5pt;
+    width: 50%;
+  }
+
   .lesson-activity {
     border: solid 1px black;
   }

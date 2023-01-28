@@ -2,6 +2,69 @@ doctype html
 
 html(lang="en")
 	head
+		title Edit #{activity.title}
 		include head
+		link(rel="stylesheet" href="../css/activity-lesson-styles.css")
 	body
 		include header
+		main
+			h2 New Activity
+			form(method="post" action=`../activityedit/${activity.id}` enctype="multipart/form-data")
+				input(hidden name="id" value=activity.id)
+				div.standardfield
+					label(for="title") Title
+					input(type="text" name="title" id="title" required value=activity.title)
+
+				div#yg-field
+					label Year Groups
+					input(type="checkbox" name="y1" id="y1-select" checked=activity.year1 === 1)
+					label(for="y1-select") Year 1
+					input(type="checkbox" name="y2" id="y2-select" checked=activity.year2 === 1)
+					label(for="y2-select") Year 2
+					input(type="checkbox" name="y3" id="y3-select" checked=activity.year3 === 1)
+					label(for="y3-select") Year 3
+					input(type="checkbox" name="y4" id="y4-select" checked=activity.year4 === 1)
+					label(for="y4-select") Year 4
+					input(type="checkbox" name="y5" id="y5-select" checked=activity.year5 === 1)
+					label(for="y5-select") Year 5
+					input(type="checkbox" name="y6" id="y6-select" checked=activity.year6 === 1)
+					label(for="y6-select") Year 6
+
+				div#tags-field
+					label(for="tags") Tags
+					input(type="text" name="tags" id="tags" value=activity.tags)
+
+				div#desc-field
+					label(for="description") Description
+					input(type="text" name="description" id="description" value=activity.description)
+
+				div#files-field
+					label(for="files") Add Files (unimplemented)
+					button(onclick="document.getElementById('files').click") + Upload
+					input(type="file" name="files" id="files" multiple)
+
+				div
+					table#existing-files
+						each res in resources
+							tr
+								table.file-table
+									tr: td= res.title
+									tr: td= res.fileTypeStr
+
+
+					// - document.getElementById("files").files = resources
+
+				div#time-field
+					label(for="duration") Time
+					select(name="duration" id="duration")
+						option(value=5 selected=(5 === activity.duration)) 5
+						option(value=10 selected=(10 === activity.duration)) 10
+						option(value=15 selected=(15 === activity.duration)) 15
+						option(value=20 selected=(20 === activity.duration)) 20
+						option(value=25 selected=(25 === activity.duration)) 25
+						option(value=30 selected=(30 === activity.duration)) 30
+						option(value=35 selected=(35 === activity.duration)) 35
+						option(value=40 selected=(40 === activity.duration)) 40
+					label minutes
+
+				input(type="submit" value="Submit Activity")
