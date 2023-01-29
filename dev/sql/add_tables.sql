@@ -40,6 +40,7 @@ create table activity (
 	id int not null auto_increment,
 	title varchar(100) not null,
 	creator varchar(100) not null,
+	date_created date not null,
 	description mediumtext,
 	tags varchar(500),
 	year1 boolean,
@@ -56,12 +57,13 @@ create table activity (
 
 create table lesson (
 	id int not null auto_increment,
+	title varchar(200) not null,
 	date_created date not null,
-	time_created time not null,
-	user_id int not null,
+	creator varchar(100) not null,
 	duration int default 60,
+	yeargroup int not null,
 	primary key (id),
-	foreign key (user_id) references user (id)
+	foreign key (creator) references user (username)
 );
 
 create table lesson_activity (

@@ -73,7 +73,47 @@ module.exports = (app, appData, upload) =>
 	]
 	app.post("/newlesson", lessonValidation, redirectIfNotLoggedIn, (req, res) =>
 	{
+		const errors = validationResult(req)
 
+		if (! errors.isEmpty())
+		{
+			let prefill = {
+				title: req.sanitize(req.body.title),
+				year: req.body.yg,
+				duration: req.body.duration
+			}
+
+			let data = Object.assign({}, appData, {prefill: prefill, user: isUserLoggedIn(req)})
+			res.render("newlesson", data)
+		}
+		else
+		{
+			req.body.title = req.sanitize(req.body.title)
+
+			let query = `insert into lesson (title, date_created, creator, duration, yeargroup)
+						 values (?, current_date(), ?, ? ,?)`
+			let args = [req.body.title, req.session.user, req.body.duration, req.body.yg]
+
+			db.query(query, args, (err, result) =>
+			{
+				if (err)
+				{
+					let prefill = {
+						title: req.sanitize(req.body.title),
+						year: req.body.yg,
+						duration: req.body.duration
+					}
+
+					let data = Object.assign({}, appData, {prefill: prefill, user: isUserLoggedIn(req)})
+					res.render("newlesson", data)
+				}
+				else
+				{
+					console.debug(result.insertId)
+					res.redirect(`../lesson/${result.insertId}`)
+				}
+			})
+		}
 	})
 
 	// New activity form GET
@@ -122,8 +162,8 @@ module.exports = (app, appData, upload) =>
 			req.body.tags = req.sanitize(req.body.tags)
 			req.body.description = req.sanitize(req.body.description)
 
-			let query = `insert into activity (title, creator, description, tags, year1, year2, year3, year4, year5, year6, duration)
-						 values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			let query = `insert into activity (title, creator, date_created, description, tags, year1, year2, year3, year4, year5, year6, duration)
+						 values (?, ?, current_date(), ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 			let args = [req.body.title, req.session.user, req.body.description, req.body.tags, req.body.y1, req.body.y2, req.body.y3, req.body.y4, req.body.y5, req.body.y6, req.body.duration]
 			// Insert into activity
 			db.query(query, args, (err, result1) =>
