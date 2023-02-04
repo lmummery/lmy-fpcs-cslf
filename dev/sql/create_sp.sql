@@ -13,3 +13,5 @@ begin
 	delete from resource;
 	delete from activity;
 end //
+
+delimiter ;
