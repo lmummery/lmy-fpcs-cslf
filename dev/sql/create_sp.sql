@@ -4,6 +4,9 @@
 
 use fpcs_cslf;
 
+# If the procedure already exists, delete and recreate it
+drop procedure if exists wipe_act_les;
+
 delimiter //
 create procedure wipe_act_les ()
 begin
