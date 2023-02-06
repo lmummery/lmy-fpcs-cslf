@@ -2,17 +2,23 @@ doctype html
 
 html(lang="en")
 	head
-		title Lesson
+		title= lesson.title
 		include head
 			link(rel="stylesheet" href="../css/activity-lesson-styles.css")
 	body
 		include header
 		main
-			h2 Lesson Title
-			// each activity in lesson
-			div.lesson-activity
-				div.act-body
-					h3.act-title activity.title
-					p.act-time activity.duration
-					p.act-files activity.files.length
-				label X
+			h2= lesson.title
+			p Year #{lesson.yeargroup}
+			p #{lesson.duration} minutes
+
+			h3 Lesson Contents
+
+			table#lesson-activities
+				each activity in activities
+					tr
+						table.lesson-activity
+							tr
+								td= activity.title
+								td(rowspan=2).act-download Download Activity
+							tr: td #{activity.duration} minutes

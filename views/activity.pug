@@ -20,17 +20,13 @@ html(lang="en")
 
 		div.activity-files
 			h3 Activity Files
-			button: a(href=activity.actzip download) Download All
+			button: a(href=`../${activity.actzip}` download) Download All
 			table#activity-files
-				tr.file
-					td.filename filename
-					td.filesize filesize
-					td.download ↓
 				each res in resources
 					tr.file
 						td.filename= res.originalname
 						td.filesize= res.filesize
-						td.download: a(href=res.filepath download) Download ↓
+						td.download: a(href=`../uploads/${res.filename}` download) Download ↓
 
 -
 	function getStr (y1, y2, y3, y4, y5, y6)

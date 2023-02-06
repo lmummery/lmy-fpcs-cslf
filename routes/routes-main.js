@@ -1,3 +1,4 @@
+// TODO app cant use database ,only SPs
 /*
 Route handler for CS Lesson Factory web app
  */
@@ -20,8 +21,6 @@ module.exports = (app, appData, upload) =>
 	 */
 	function redirectIfLoggedIn (req, res, next)
 	{
-		next()
-		return
 		if (req.session.user) res.redirect("../mydetails")
 		else next()
 	}
@@ -236,10 +235,10 @@ module.exports = (app, appData, upload) =>
 						suffix += base64.charAt(Math.floor(Math.random() * 64))
 					}
 					const filename = `${req.body.title.replaceAll(" ", "+")}_${suffix}.zip`
-					const outPath = `genFiles/genFiles/${filename}`
+					const outPath = `genFiles/${filename}`
 					zip.writeZip(filename, () =>
 					{
-						fs.rename(filename, outPath, err =>
+						fs.rename(filename, `genFiles/${outPath}`, err =>
 						{
 							if (err)
 							{
@@ -419,8 +418,42 @@ module.exports = (app, appData, upload) =>
 	// Lesson page
 	app.get("/lesson/:id", (req, res) =>
 	{
-		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("lesson", data)
+		let query = `select * from lesson where id = ? limit 1`
+		db.query(query, req.params.id, (err, result) =>
+		{
+			if (err)
+			{
+				// TODO temp redirect to index on err in get lesson
+				res.redirect("../")
+			}
+			else
+			{
+				const lesson = result[0]
+
+				query = `select a.* from activity a
+						 join lesson_activity la on a.id = la.activity_id
+						 join lesson l on la.lesson_id = l.id
+						 where l.id = ?`
+				db.query(query, req.params.id, (err, results) =>
+				{
+					if (err)
+					{
+						// TODO temp redirect to index on err in get activities from lesson
+						res.redirect("../")
+					}
+					else
+					{
+						const activities = results
+
+						console.debug(results)
+
+						console.debug(activities)
+
+						let data = Object.assign({}, appData, {lesson: lesson, activities: activities}, {user: isUserLoggedIn(req)})
+						res.render("lesson", data)}
+				})
+			}
+		})
 	})
 
 	// Lesson edit form GET
@@ -655,6 +688,10 @@ module.exports = (app, appData, upload) =>
 	{
 		res.send("User deletion")
 	})
+
+	// Include the routes for .docx generation and .zip generation
+	require("./create-lesson-zip")(app, appData)
+	require("./create-lesson-docx")(app, appData)
 
 	// Catch-all route, used for 404 errors
 	app.get("*", (req, res) =>

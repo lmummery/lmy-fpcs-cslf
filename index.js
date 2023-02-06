@@ -67,6 +67,11 @@ global.db = db
 // Set directory where static files (css, js, etc.) will be found
 app.use(express.static("public"))
 
+// Serve uploads and genFiles as static files as well
+// This will allow them to be downloaded by a client browser
+app.use(express.static("genFiles"))
+app.use(express.static("uploads"))
+
 // Add CORS headers
 app.use((req, res, next) =>
 {
