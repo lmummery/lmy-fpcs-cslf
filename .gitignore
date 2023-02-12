@@ -2,3 +2,4 @@ node_modules
 uploads/uploads/*
 genFiles/genFiles/*
 genFiles/lessons/*
+genFiles/lessondocs/*
