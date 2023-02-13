@@ -99,13 +99,6 @@ module.exports = (app, appData) =>
 				})
 
 				table.root.push(new TableRow({
-					children: [new TableCell({
-						children: [new Paragraph("Hello there")],
-						columnSpan: 3
-					})]
-				}))
-
-				table.root.push(new TableRow({
 					children: [
 						new TableCell({
 							children: []
