@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 	destination: "uploads/uploads/", // Where to store the files
 	filename: (req, file, cb) =>
 	{
-		let suffix = ""
+		let suffix = "_"
 		// Suffix will be 10 digits in base 32
 		for (let i = 0; i < 10; i ++)
 		{

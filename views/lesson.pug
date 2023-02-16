@@ -14,7 +14,11 @@ html(lang="en")
 
 			h3 Lesson Contents
 
+			a(href=`../lessondoc/${lesson.id}` download) Download Lesson Plan
+			br
 			a(href=`../lessonzip/${lesson.id}` download) Download All Resources
+			br
+			br
 
 			table#lesson-activities
 				each activity in activities

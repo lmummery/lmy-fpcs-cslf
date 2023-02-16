@@ -157,8 +157,9 @@ module.exports = (app, appData) =>
 					}]
 				})
 
-				const fileName = activities[0].lesson_title.replaceAll(" ", "+")
-				const fileOut = `genFiles/lessondocs/${fileName}_${genSuffix()}.docx`
+
+				const fileName = `${activities[0].lesson_title.replaceAll(" ", "+")}_${genSuffix()}`
+				const fileOut = `genFiles\\lessondocs\\${fileName}.docx`
 
 				// Copy the document from variable space to storage
 				Packer.toBuffer(doc).then(buffer =>
