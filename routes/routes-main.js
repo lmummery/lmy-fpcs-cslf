@@ -473,8 +473,21 @@ module.exports = (app, appData, upload) =>
 	// User activities page
 	app.get("/myactivities", redirectIfNotLoggedIn, (req, res) =>
 	{
-		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("user-activities", data)
+		let query = `select *
+					 from activity
+					 where creator = ?`
+
+		db.query(query, req.session.user, (err, results) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				res.redirect("../") // TODO - possible better redirect for db error
+			}
+
+			let data = Object.assign({}, appData, {activities: results, user: isUserLoggedIn(req)})
+			res.render("user-activities", data)
+		})
 	})
 
 	// User favourite activities page
