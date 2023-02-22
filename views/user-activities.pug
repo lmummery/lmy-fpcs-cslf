@@ -13,6 +13,7 @@ html(lang="en")
 				h2 My Activities
 				if activities.length === 0
 					h3 No activities found
+					a(href="../newactivity") Create an Activity Now
 				else
 					table
 						each activity in activities
