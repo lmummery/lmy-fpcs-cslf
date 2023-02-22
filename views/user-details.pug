@@ -11,10 +11,11 @@ html(lang="en")
 			include sidebar
 			div#main
 				h2 My Details
-				form(method="put" action="../mydetails")
+				form(method="post" action="../mydetails")
+					input(type=number name="id" value=prefill.id hidden)
 					div#username-field
 						label(for="username") Username
-						input(type="text" name="username" id="username" value=prefill.username)
+						input(type="text" name="username" id="username" value=prefill.username disabled)
 
 					div#password-field
 						label(for="password") Password

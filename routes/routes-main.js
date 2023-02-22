@@ -3,6 +3,7 @@
 Route handler for CS Lesson Factory web app
  */
 
+const {body} = require("express-validator");
 module.exports = (app, appData, upload) =>
 {
 	const {body, validationResult} = require("express-validator")
@@ -663,13 +664,65 @@ module.exports = (app, appData, upload) =>
 	// User details form GET
 	app.get("/mydetails", redirectIfNotLoggedIn, (req, res) =>
 	{
-		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("user-details", data)
+		let query = `select id, username, title, first_name, surname
+					 from user
+					 where username = ?
+					 limit 1`
+		// req.session.user must exist - authorisation must be passed to get here
+		db.query(query, req.session.user, (err, results) =>
+		{
+			if (err) throw err
+
+			let prefill = {
+				id: results[0].id,
+				username: results[0].username,
+				title: results[0].title,
+				firstname: results[0].first_name,
+				surname: results[0].surname
+			}
+
+			let data = Object.assign({}, appData, {user: isUserLoggedIn(req), prefill: prefill})
+			res.render("user-details", data)
+		})
 	})
 
 	// User details form PUT
-	app.put("/mydetails", redirectIfNotLoggedIn, userDetailsValidation, (req, res) =>
+	// PUT implemented as POST because of HTML form constraints
+	const userDetailsUpdateValidation = [
+		body("firstname").notEmpty(),
+		body("surname").notEmpty()
+	] // Reduced validation because of reduced form scope
+	app.post("/mydetails", redirectIfNotLoggedIn, userDetailsUpdateValidation, (req, res) =>
 	{
+		const errors = validationResult(req)
+		if (! errors.isEmpty())
+		{
+			console.debug(errors.array())
+			res.redirect("../mydetails")
+		}
+		else
+		{
+			// Sanitise input data
+			req.body.title = req.sanitize(req.body.title)
+			req.body.firstname = req.sanitize(req.body.firstname)
+			req.body.surname = req.sanitize(req.body.surname)
+
+			let query = `update user
+					 set title = ?,
+					     first_name = ?, surname = ?
+					 where id = ?`
+
+			db.query(query, [req.body.title, req.body.firstname, req.body.surname, req.body.id], err =>
+			{
+				if (err)
+				{
+					console.error(err)
+					res.redirect("../") // TODO - better redirect
+				}
+				// Just redirect to /mydetails on success - this will get the updated details anyway
+				res.redirect("../mydetails")
+			})
+		}
 	})
 
 	// Search form GET
