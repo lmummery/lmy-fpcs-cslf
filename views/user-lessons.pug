@@ -11,15 +11,33 @@ html(lang="en")
 			include sidebar
 			div#main
 				h2 My Lessons
-				table
-					tr
-						td: table.activity-table
+				if lessons.length === 0
+					h3 No lessons found
+					a(href="../newlesson") Create a Lesson Now
+				else
+					table
+						each lesson in lessons
 							tr
-								td(colspan=2).act-title lesson.title
-								td(rowspan=3).edit-button Edit
-								td(rowspan=4).delete-button X
-							tr
-								td.act-info lesson.duration
-							tr
-								td.act-info lesson.yg
-								td.act-info lesson.activities.length
+								td: table.activity-table
+									tr
+										td(colspan=2).act-title= lesson.title
+										td(rowspan=3).edit-button Edit
+										td(rowspan=4).delete-button X
+									tr
+										td.act-info #{lesson.duration} minutes
+									tr
+										td.act-info Year #{lesson.yeargroup}
+										td.act-info #{getActCount(lesson.id, actCounts)} activities
+
+-
+	function getActCount (lesson_id, actCounts)
+	{
+		for (const count of actCounts)
+		{
+			if (count.id === lesson_id)
+			{
+				return count.actcount
+			}
+		}
+		return 0
+	}

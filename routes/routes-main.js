@@ -477,7 +477,7 @@ module.exports = (app, appData, upload) =>
 					 from activity
 					 where creator = ?`
 
-		db.query(query, req.session.user, (err, results) =>
+		db.query(query, req.session.user, (err, activities) =>
 		{
 			if (err)
 			{
@@ -485,8 +485,17 @@ module.exports = (app, appData, upload) =>
 				res.redirect("../") // TODO - possible better redirect for db error
 			}
 
-			let data = Object.assign({}, appData, {activities: results, user: isUserLoggedIn(req)})
-			res.render("user-activities", data)
+			query = `select a.id as id, count(*) as rescount
+					 from activity a
+					 join activity_resource ar
+					 on a.id = ar.activity_id
+					 where a.creator = ?
+					 group by a.id`
+			db.query(query, req.session.user, (err, resCounts) =>
+			{
+				let data = Object.assign({}, appData, {activities: activities, resCounts: resCounts, user: isUserLoggedIn(req)})
+				res.render("user-activities", data)
+			})
 		})
 	})
 
@@ -500,8 +509,29 @@ module.exports = (app, appData, upload) =>
 	// User lessons page
 	app.get("/mylessons", redirectIfNotLoggedIn, (req, res) =>
 	{
-		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("user-lessons", data)
+		let query = `select *
+					 from lesson
+					 where creator = ?`
+		db.query(query, req.session.user, (err, lessons) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				res.redirect("../") // TODO - possible better redirect for db error
+			}
+
+			query = `select l.id as id, count(*) as actcount
+					 from lesson l
+					 join lesson_activity la
+					 on l.id = la.lesson_id
+					 where l.creator = ?
+					 group by l.id`
+			db.query(query, req.session.user, (err, actCounts) =>
+			{
+				let data = Object.assign({}, appData, {lessons: lessons, actCounts: actCounts, user: isUserLoggedIn(req)})
+				res.render("user-lessons", data)
+			})
+		})
 	})
 
 	// Login form GET
