@@ -10,16 +10,80 @@ html(lang="en")
 		main
 			include sidebar
 			div#main
-				h2 My Favourites
-				table
-					tr
-						td: table.activity-table
+				h2 My Favourite Activities
+				if activities.length === 0
+					h3 No favourite activities found
+				else
+					table
+						each activity in activities
 							tr
-								td(colspan=2).act-title activity.title
-								td(rowspan=3).star-button *
-							tr
-								td.act-info activity.date-created
-								td.act-info activity.duration
-							tr
-								td.act-info activity.yglist
-								td.act-info activity.files.length
+								td: table.activity-table
+									tr
+										td(colspan=2).act-title: a(href=`../activity/${activity.id}`)= activity.title
+										td(rowspan=3).star-button *
+									tr
+										td.act-info #{activity.date_created.getDate()} #{getMonthStr(activity.date_created.getMonth())} #{activity.date_created.getFullYear()}
+										td.act-info #{activity.duration} minutes
+									tr
+										td.act-info= yeargroupString(activity)
+										td.act-info #{getResCount(activity.id, resCounts)[0]} resource#{getResCount(activity.id, resCounts)[1]}
+
+-
+	function yeargroupString (activity)
+	{
+		let yrs = [
+			activity.year1, activity.year2, activity.year3,
+			activity.year4, activity.year5, activity.year6
+		]
+
+		let yrnums = []
+		for (let i = 0; i < 6; i ++)
+		{
+			if (yrs[i] === 1)
+			{
+				yrnums.push(i + 1)
+			}
+		}
+
+		if (yrnums.length === 1)
+		{
+			return `Year ${yrnums[0]}`
+		}
+		else if (yrnums.length === 2)
+		{
+			return `Years ${yrnums[0]} and ${yrnums[1]}`
+		}
+		else
+		{
+			let str = "Years "
+			for (let i = 0; i < yrnums.length; i++) {
+				if (i === yrnums.length - 1) {
+					str += " and "
+				}
+				str += yrnums[i]
+				if (i < yrnums.length - 2) {
+					str += ", "
+				}
+			}
+			return str
+		}
+	}
+
+	function getMonthStr (m)
+	{
+		let months = [
+			"Jan",	"Feb",	"Mar",	"Apr",
+			"May",	"Jun",	"Jul",	"Aug",
+			"Sep",	"Oct",	"Nov",	"Dec"
+		]
+		return months[m - 1]
+	}
+
+	function getResCount(act_id, resCounts) {
+		for (const count of resCounts) {
+			if (count.id === act_id) {
+				return [count.rescount, count.rescount === 1 ? "" : "s"]
+			}
+		}
+		return 0
+	}

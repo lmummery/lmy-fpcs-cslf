@@ -502,8 +502,35 @@ module.exports = (app, appData, upload) =>
 	// User favourite activities page
 	app.get("/favourites", redirectIfNotLoggedIn, (req, res) =>
 	{
-		let data = Object.assign({}, appData, {user: isUserLoggedIn(req)})
-		res.render("user-favourites", data)
+		// TODO - this would be better as a view
+		let query = `select a.*
+					 from activity a
+					 join starred_activity sa
+					 on a.id = sa.activity_id
+					 join user u
+					 on sa.user_id = u.id
+					 where u.username = ?`
+		db.query(query, req.session.user, (err, faves) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				res.redirect("../")
+			}
+
+			query = `select a.id as id, count(*) as rescount
+					 from activity a
+					 join activity_resource ar on a.id = ar.activity_id
+					 join starred_activity sa on a.id = sa.activity_id
+					 join user u on sa.user_id = u.id
+					 where u.username = ?
+					 group by a.id`
+			db.query(query, req.session.user, (err, resCounts) =>
+			{
+				let data = Object.assign({}, appData, {activities: faves, resCounts: resCounts, user: isUserLoggedIn(req)})
+				res.render("user-favourites", data)
+			})
+		})
 	})
 
 	// User lessons page
