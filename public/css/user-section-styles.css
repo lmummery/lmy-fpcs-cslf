@@ -73,6 +73,10 @@
     position: relative;
     left: 92%;
   }
+
+  .star-button img {
+    max-width: 50px;
+  }
 }
 
 /*# sourceMappingURL=user-section-styles.css.map */

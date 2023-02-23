@@ -20,7 +20,7 @@ html(lang="en")
 								td: table.activity-table
 									tr
 										td(colspan=2).act-title: a(href=`../activity/${activity.id}`)= activity.title
-										td(rowspan=3).star-button *
+										td(rowspan=3).star-button: img(src="img/starred.png")
 									tr
 										td.act-info #{activity.date_created.getDate()} #{getMonthStr(activity.date_created.getMonth())} #{activity.date_created.getFullYear()}
 										td.act-info #{activity.duration} minutes
