@@ -8,6 +8,20 @@ html(lang="en")
 	body
 		include header
 		h2= activity.title
+
+		if user
+			div.is-favourite
+				if favourite
+					a(href=`../remove-favourite?id=${activity.id}`)
+						img(src="../img/starred.png")
+						p Favourite
+				else
+					a(href=`../add-favourite?id=${activity.id}`)
+						img(src="../img/unstarred.png")
+						p Favourite this activity
+		else
+			a(href=`../login?url=/activity/${activity.id}`) Sign in to favourite this activity
+
 		div.activity-description
 			h3 Activity Description
 			p= activity.description

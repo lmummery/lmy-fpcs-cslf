@@ -304,12 +304,76 @@ module.exports = (app, appData, upload) =>
 					}
 					else
 					{
-						let data = Object.assign({}, appData, {activity: result[0], resources: results}, {user: isUserLoggedIn(req)})
-						res.render("activity", data)
+						// Check if this activity is a favourite of the user if they are logged in
+						if (req.session.user)
+						{
+							query = `select count(*) as count
+									 from starred_activity sa
+									 join user u
+									 on sa.user_id = u.id
+									 where sa.activity_id = ?
+									 and u.username = ?`
+							db.query(query, [req.params.id, req.session.user], (err, favdata) =>
+							{
+								let data = Object.assign({}, appData, {
+									activity: result[0],
+									resources: results,
+									favourite: favdata[0].count === 1
+								}, {user: isUserLoggedIn(req)})
+								res.render("activity", data)
+							})
+						}
+						else
+						{
+							let data = Object.assign({}, appData, {
+								activity: result[0],
+								resources: results
+							}, {user: isUserLoggedIn(req)})
+							res.render("activity", data)
+						}
 					}
 				})
 			}
 		})
+	})
+
+	// Route for adding favourite activity
+	app.get("/add-favourite", (req, res) =>
+	{
+		// Authorisation - not using base function because of different behaviour
+		if (! isUserLoggedIn(req))
+		{
+			res.redirect(`../activity/${req.query.id}`)
+		}
+		else // Authorisation passed
+		{
+			let query = `insert into starred_activity (user_id, activity_id)
+						 values ((select id from user where username = ?), ?)`
+			db.query(query, [req.session.user, req.query.id], (err, result) =>
+			{
+				res.redirect(`../activity/${req.query.id}`)
+			})
+		}
+	})
+
+	// Route for removing favourite activity
+	app.get("/remove-favourite", (req, res) =>
+	{
+		// Authorisation - not using base function because of different behaviour
+		if (! isUserLoggedIn(req))
+		{
+			res.redirect(`../activity/${req.query.id}`)
+		}
+		else
+		{
+			let query = `delete from starred_activity
+						 where user_id = (select id from user where username = ?)
+						 and activity_id = ?`
+			db.query(query, [req.session.user, req.query.id], (err, result) =>
+			{
+				res.redirect(`../activity/${req.query.id}`)
+			})
+		}
 	})
 
 	// Activity edit form GET

@@ -46,6 +46,15 @@
     width: 75%;
     border: solid 1px black;
   }
+
+  .is-favourite a img {
+    display: inline;
+    width: 30px;
+  }
+  .is-favourite a p {
+    display: inline;
+    vertical-align: center;
+  }
 }
 
 /*# sourceMappingURL=activity-lesson-styles.css.map */
