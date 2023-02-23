@@ -20,7 +20,7 @@ html(lang="en")
 							tr
 								td: table.activity-table
 									tr
-										td(colspan=2).act-title= lesson.title
+										td(colspan=2).act-title: a(href=`../lesson/${lesson.id}`)= lesson.title
 										td(rowspan=3).edit-button Edit
 										td(rowspan=4).delete-button X
 									tr
