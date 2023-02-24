@@ -360,6 +360,8 @@ module.exports = (app, appData, upload) =>
 	app.get("/remove-favourite", (req, res) =>
 	{
 		// Authorisation - not using base function because of different behaviour
+		// isUserLoggedIn() can only possibly be false from the activity page
+		// -- if coming form favourites page, the user must already have been signed in
 		if (! isUserLoggedIn(req))
 		{
 			res.redirect(`../activity/${req.query.id}`)
@@ -371,7 +373,14 @@ module.exports = (app, appData, upload) =>
 						 and activity_id = ?`
 			db.query(query, [req.session.user, req.query.id], (err, result) =>
 			{
-				res.redirect(`../activity/${req.query.id}`)
+				if (req.query.from === "act")
+				{
+					res.redirect(`../activity/${req.query.id}`)
+				}
+				else
+				{
+					res.redirect(`../favourites`)
+				}
 			})
 		}
 	})

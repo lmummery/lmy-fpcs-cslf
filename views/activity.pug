@@ -12,7 +12,7 @@ html(lang="en")
 		if user
 			div.is-favourite
 				if favourite
-					a(href=`../remove-favourite?id=${activity.id}`)
+					a(href=`../remove-favourite?id=${activity.id}&from=act`)
 						img(src="../img/starred.png")
 						p Favourite
 				else
