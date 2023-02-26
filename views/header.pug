@@ -15,12 +15,9 @@ nav
 			li: a(href="../signup") Get Started
 			li: a(href="../login") Log In
 
-		//li: a(href="../search") Search
-		//	|
-		//	|
-		//	img(src="../img/search.png")#search-button
 		li: form(method="post" action="../search")#nav-search
-			input(type="text" name="query")#search-text
+			label(for="search-text" hidden) Search for activities
+			input(type="text" name="query" placeholder="Search for activities")#search-text
 			|
 			|
 			input(type="image" src="../img/search.png" alt="search")#search-button

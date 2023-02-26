@@ -2,10 +2,135 @@ doctype html
 
 html(lang="en")
 	head
+		title Search for #{query}
 		include head
+		link(rel="stylesheet" href="../css/search-styles.css")
 	body
 		include header
-		if activities.length === 0
-			h3 No results found for "#{query}"
-		each activity in activities
-			p= activity.title
+
+		main
+			form(method="post" action="../search")
+				h2
+					label(for="query") Search for:
+					|
+					|
+					input(type="text" name="query" value=query)#query
+					|
+					|
+					input(type="submit" value="Search Again")
+
+			if activities.length === 0
+				h3 No results found for "#{query}"
+			else
+				div#filters
+					h4 Filters
+
+					div#yg-filter
+						input(type="radio" name="yg" value=0 checked)#allyg.yg-radio
+						label(for="allyg") All Years
+						input(type="radio" name="yg" value=1)#y1.yg-radio
+						label(for="y1") Year 1
+						input(type="radio" name="yg" value=2)#y2.yg-radio
+						label(for="y2") Year 2
+						input(type="radio" name="yg" value=3)#y3.yg-radio
+						label(for="y3") Year 3
+						input(type="radio" name="yg" value=4)#y4.yg-radio
+						label(for="y4") Year 4
+						input(type="radio" name="yg" value=5)#y5.yg-radio
+						label(for="y5") Year 5
+						input(type="radio" name="yg" value=6)#y6.yg-radio
+						label(for="y6") Year 6
+						script(src="../js/search-filter-scripts.js")
+
+				table#results-table
+					each activity in activities
+						tr: td
+							table.activity-table
+								tr
+									td(colspan=2).act-title: a(href=`../activity/${activity.id}`)= activity.title
+									td(rowspan=3).star-button: img(src="../img/unstarred.png")
+								tr
+									td.act-info #{activity.date_created.getDate()} #{getMonthStr(activity.date_created.getMonth())} #{activity.date_created.getFullYear()}
+									td.act-info #{activity.duration} minutes
+								tr
+									td.act-info= yeargroupString(activity)
+								tr(hidden)
+									td.yg-info= ygShortString(activity)
+				h3(hidden)#none-found-msg No results matching filters
+
+-
+	function yeargroupString (activity)
+	{
+		let yrs = [
+			activity.year1, activity.year2, activity.year3,
+			activity.year4, activity.year5, activity.year6
+		]
+
+		let yrnums = []
+		for (let i = 0; i < 6; i ++)
+		{
+			if (yrs[i] === 1)
+			{
+				yrnums.push(i + 1)
+			}
+		}
+
+		if (yrnums.length === 1)
+		{
+			return `Year ${yrnums[0]}`
+		}
+		else if (yrnums.length === 2)
+		{
+			return `Years ${yrnums[0]} and ${yrnums[1]}`
+		}
+		else
+		{
+			let str = "Years "
+			for (let i = 0; i < yrnums.length; i++) {
+				if (i === yrnums.length - 1) {
+					str += " and "
+				}
+				str += yrnums[i]
+				if (i < yrnums.length - 2) {
+					str += ", "
+				}
+			}
+			return str
+		}
+	}
+
+	function ygShortString (activity)
+	{
+		let out = ""
+		let yrs = [
+			activity.year1, activity.year2, activity.year3,
+			activity.year4, activity.year5, activity.year6
+		]
+		for (let i = 0; i < 6; i ++)
+		{
+			if (yrs[i] === 1)
+			{
+				out += (i + 1).toString()
+			}
+		}
+		return out
+	}
+
+	function getMonthStr (m)
+	{
+		let months = [
+			"Jan",	"Feb",	"Mar",	"Apr",
+			"May",	"Jun",	"Jul",	"Aug",
+			"Sep",	"Oct",	"Nov",	"Dec"
+		]
+		return months[m - 1]
+	}
+
+	function getResCount(act_id, resCounts) {
+		for (const count of resCounts) {
+			if (count.id === act_id) {
+				return [count.rescount, count.rescount === 1 ? "" : "s"]
+			}
+		}
+		return 0
+	}

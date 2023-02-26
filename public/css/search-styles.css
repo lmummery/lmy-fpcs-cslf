@@ -1,0 +1,33 @@
+@media (min-width: 500px) {
+  #results-table {
+    width: 90%;
+  }
+
+  table.activity-table {
+    width: 90%;
+    border: solid 1px black;
+  }
+  table.activity-table .act-info {
+    min-width: 250px;
+  }
+  table.activity-table .edit-button, table.activity-table .delete-button, table.activity-table .star-button {
+    width: 200px;
+    text-align: center;
+  }
+  table.activity-table .act-title {
+    font-weight: bold;
+  }
+
+  .star-button img {
+    width: 50px;
+  }
+
+  #filters {
+    margin-bottom: 30px;
+  }
+  #filters * label {
+    margin-right: 15px;
+  }
+}
+
+/*# sourceMappingURL=search-styles.css.map */
