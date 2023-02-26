@@ -878,6 +878,31 @@ module.exports = (app, appData, upload) =>
 	// Search form POST
 	app.post("/search", (req, res) =>
 	{
+		let query = `select *
+					 from (
+					     select 1 as rnk, a.*
+					     from activity a
+					     where title like '%${req.sanitize(req.body.query)}%'
+					     union
+					     select 2 as rnk, a.*
+					     from activity a
+					     where description like '%${req.sanitize(req.body.query)}%'
+                         and not title like '%${req.sanitize(req.body.query)}%'
+					      ) search_table
+					 order by rnk`
+		// not title like to remove duplicate results - they are already covered by the title check
+		db.query(query, (err, results) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				res.redirect("../search")
+				return
+			}
+
+			let data = Object.assign({}, appData, {query: req.sanitize(req.body.query), activities: results, user: isUserLoggedIn(req)})
+			res.render("search-results", data)
+		})
 	})
 
 	app.post("/delete", (req, res) =>

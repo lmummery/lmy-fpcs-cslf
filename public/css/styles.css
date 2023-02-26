@@ -6,4 +6,14 @@ nav ul li {
   margin: auto 10px;
 }
 
+#nav-search {
+  position: absolute;
+  right: 15%;
+  top: 20px;
+}
+
+#search-button {
+  height: 15px;
+}
+
 /*# sourceMappingURL=styles.css.map */
