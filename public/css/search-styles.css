@@ -28,6 +28,17 @@
   #filters * label {
     margin-right: 15px;
   }
+  #filters div {
+    margin-bottom: 5px;
+  }
+
+  #time-filter input {
+    margin-right: 20px;
+  }
+
+  #filter-controls * {
+    margin-right: 10px;
+  }
 }
 
 /*# sourceMappingURL=search-styles.css.map */

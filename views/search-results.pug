@@ -40,7 +40,19 @@ html(lang="en")
 						label(for="y5") Year 5
 						input(type="radio" name="yg" value=6)#y6.yg-radio
 						label(for="y6") Year 6
-						script(src="../js/search-filter-scripts.js")
+
+					div#time-filter
+						label(for="min-dur") Min. Duration
+						input(type="number" name="min-dur")#min-dur
+
+						label(for="max-dur") Max. Duration
+						input(type="number" name="max-dur")#max-dur
+
+					div#filter-controls
+						button#filter-button Apply Filters
+						button#clear-filters Clear Filters
+
+					script(src="../js/search-filter-scripts.js")
 
 				table#results-table
 					each activity in activities
@@ -56,6 +68,11 @@ html(lang="en")
 									td.act-info= yeargroupString(activity)
 								tr(hidden)
 									td.yg-info= ygShortString(activity)
+								tr
+									if activity.description.length <= 70
+										td(colspan=2).act-info= activity.description
+									else
+										td(colspan=2).act-info= activity.description.substring(0, 67) + "..."
 				h3(hidden)#none-found-msg No results matching filters
 
 -
