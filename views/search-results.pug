@@ -54,13 +54,22 @@ html(lang="en")
 
 					script(src="../js/search-filter-scripts.js")
 
+				if user
+					input(type="text" disabled name="username" value=username hidden)#username-label
+
 				table#results-table
 					each activity in activities
 						tr: td
-							table.activity-table
+							table(id=`result${activity.id}`).activity-table
 								tr
 									td(colspan=2).act-title: a(href=`../activity/${activity.id}`)= activity.title
-									td(rowspan=3).star-button: img(src="../img/unstarred.png")
+									if user && isActFave(activity.id, favdata)
+										td(rowspan=3).star-button: a(onclick=`removeFavourite(${activity.id})`): img(src="../img/starred.png")
+									else if user
+										td(rowspan=3).star-button: a(onclick=`addFavourite(${activity.id})`): img(src="../img/unstarred.png")
+									else
+										// Empty table cell to preserve spacing
+										td(rowspan=3).empty
 								tr
 									td.act-info #{activity.date_created.getDate()} #{getMonthStr(activity.date_created.getMonth())} #{activity.date_created.getFullYear()}
 									td.act-info #{activity.duration} minutes
@@ -143,11 +152,23 @@ html(lang="en")
 		return months[m - 1]
 	}
 
-	function getResCount(act_id, resCounts) {
+	function getResCount (act_id, resCounts) {
 		for (const count of resCounts) {
 			if (count.id === act_id) {
 				return [count.rescount, count.rescount === 1 ? "" : "s"]
 			}
 		}
 		return 0
+	}
+
+	function isActFave (act_id, favdata)
+	{
+		for (let id of favdata)
+		{
+			if (id.id == act_id)
+			{
+				return true
+			}
+		}
+		return false
 	}

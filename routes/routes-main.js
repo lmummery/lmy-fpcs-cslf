@@ -128,7 +128,6 @@ module.exports = (app, appData, upload) =>
 		body("title").notEmpty(),
 		body("description").notEmpty()
 	]
-	// TODO - multer not accepting uploads
 	app.post("/newactivity", upload.array("files"), redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
 		const errors = validationResult(req)
@@ -487,6 +486,7 @@ module.exports = (app, appData, upload) =>
 	]
 	app.post("/generate", redirectIfNotLoggedIn, generatorValidation, (req, res) =>
 	{
+		res.render("generator", Object.assign({}, appData, {user: isUserLoggedIn(req)}))
 	})
 
 	// Lesson page
@@ -900,8 +900,87 @@ module.exports = (app, appData, upload) =>
 				return
 			}
 
-			let data = Object.assign({}, appData, {query: req.sanitize(req.body.query), activities: results, user: isUserLoggedIn(req)})
-			res.render("search-results", data)
+			if (isUserLoggedIn(req))
+			{
+				// Get the favourite status of every activity that matches the search criteria
+				query = `select sa.activity_id as id
+						 from starred_activity sa
+						 join user u
+						 on sa.user_id = u.id
+						 where u.username = ?
+						 and sa.activity_id in
+							 (select id
+							  from activity
+							  where title like '%${req.sanitize(req.body.query)}%'
+							  or description like '%${req.sanitize(req.body.query)}%')`
+				db.query(query, req.session.user, (err, favdata) =>
+				{
+					if (err)
+					{
+						console.error(err)
+						res.redirect("../search")
+						return
+					}
+
+					let data = Object.assign({}, appData, {favdata: favdata, username: req.session.user, query: req.sanitize(req.body.query), activities: results, user: isUserLoggedIn(req)})
+					res.render("search-results", data)
+				})
+			}
+			else
+			{
+				let data = Object.assign({}, appData, {query: req.sanitize(req.body.query), activities: results, user: isUserLoggedIn(req)})
+				res.render("search-results", data)
+			}
+		})
+	})
+
+	// Internal API route to register starred activity
+	app.get("/api/add-fav", (req, res) =>
+	{
+		if (! (req.query.username && req.query.actid))
+		{
+			res.sendStatus(403)
+			return
+		}
+
+		// let query = `insert into starred_activity (user_id, activity_id)
+			//			 values ((select id from user where username = ?), ?)`
+
+		let query = `insert into starred_activity (user_id, activity_id)
+					 values ((select id from user where username = ?), ?)`
+		db.query(query, [req.query.username, req.query.actid], (err, result) =>
+		{
+			if (err)
+			{
+				res.sendStatus(500)
+				return
+			}
+
+			res.sendStatus(200)
+		})
+	})
+
+	// Internal API route to remove starred activity
+	app.get("/api/remove-fav", (req, res) =>
+	{
+		if (! (req.query.username && req.query.actid))
+		{
+			res.sendStatus(403)
+			return
+		}
+
+		let query = `delete from starred_activity
+					 where user_id = (select id from user where username = ?)
+					 and activity_id = ?`
+		db.query(query, [req.query.username, req.query.actid], (err, result) =>
+		{
+			if (err)
+			{
+				res.sendStatus(500)
+				return
+			}
+
+			res.sendStatus(200)
 		})
 	})
 

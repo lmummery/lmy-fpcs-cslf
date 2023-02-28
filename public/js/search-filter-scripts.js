@@ -18,33 +18,27 @@ function activityFilter ()
 
 	if (minVal !== "")
 	{
-		console.log(minVal)
 		minVal = parseInt(minVal)
 	} else
 	{
-		console.log("No min value")
 		minVal = 0 // All activities must be longer than 0 minutes
 	}
 
 	if (maxVal !== "")
 	{
-		console.log(maxVal)
 		maxVal = parseInt(maxVal)
 	} else
 	{
-		console.log("No max value")
 		maxVal = 99999 // Large number so no activity could possibly be longer
 	}
 
 	// Get radio elements for year group filter
 	let radios = document.getElementsByName("yg")
-	console.log(radios)
 	let yrVal
 	for (let radio of radios)
 	{
 		if (radio.checked)
 		{
-			console.log(`Selected value = ${radio.value}`)
 			yrVal = radio.value // Only one radio button can ever be selected at a time
 		}
 	}
@@ -52,7 +46,6 @@ function activityFilter ()
 	// Get all result elements in the list, including any hidden ones
 	const elements = document.getElementById("results-table").children[0].children
 	let el = elements[0]
-	console.log(el.children[0].children[0].children[0].children[1].children[1].innerText.split(" ")[0])
 
 	for (let el of elements)
 	{
@@ -62,15 +55,7 @@ function activityFilter ()
 		// Get just the length in minutes for the current activity as a number
 		let elDur = parseInt(el.children[0].children[0].children[0].children[1].children[1].innerText.split(" ")[0])
 
-		if (yrVal !== "0" && !elYr.includes(yrVal))
-		{
-			el.hidden = true
-		}
-		if (elDur < minVal)
-		{
-			el.hidden = true
-		}
-		if (elDur > maxVal)
+		if (yrVal !== "0" && !elYr.includes(yrVal) || elDur < minVal || elDur > maxVal)
 		{
 			el.hidden = true
 		}
@@ -78,7 +63,7 @@ function activityFilter ()
 
 	// If all the results are hidden, unhide the message showing that no results match
 	const allHidden = Array.from(elements).filter(el => !el.hidden).length === 0
-	document.getElementById("none-found-msg").hidden = !allHidden;
+	document.getElementById("none-found-msg").hidden = ! allHidden;
 }
 
 function clearFilters ()
@@ -87,4 +72,42 @@ function clearFilters ()
 	document.getElementById("max-dur").value = ""
 	document.getElementById("allyg").checked = true
 	activityFilter()
+}
+
+function removeFavourite (activityId)
+{
+	const username = document.getElementById("username-label").value
+	// Trigger the route to remove a favourite without changing the web browser location
+	let xhttp = new XMLHttpRequest()
+	xhttp.onreadystatechange = function ()
+	{
+		if ((this.status === 200) && this.readyState === 4)
+		{
+			// console.log(document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].children[0])
+			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].children[0].src = "../img/unstarred.png"
+			// console.log(document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0])
+			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].onclick = () => addFavourite(activityId)
+			// console.log(document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0])
+		}
+	}
+	xhttp.open("GET", `http://localhost:8000/api/remove-fav?username=${username}&actid=${activityId}`)
+	xhttp.send()
+}
+
+function addFavourite (activityId)
+{
+	const username = document.getElementById("username-label").value
+	// Trigger the route to add a favourite without changing the web browser location
+	let xhttp = new XMLHttpRequest()
+	xhttp.onreadystatechange = function ()
+	{
+		if (this.status === 200 && this.readyState === 4)
+		{
+			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].children[0].src = "../img/starred.png"
+			// document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].onclick = `removeFavourite(${activityId})`
+			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].onclick = () => removeFavourite(activityId)
+		}
+	}
+	xhttp.open("GET", `http://localhost:8000/api/add-fav?username=${username}&actid=${activityId}`)
+	xhttp.send()
 }
