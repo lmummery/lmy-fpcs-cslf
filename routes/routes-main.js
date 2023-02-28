@@ -317,7 +317,8 @@ module.exports = (app, appData, upload) =>
 								let data = Object.assign({}, appData, {
 									activity: result[0],
 									resources: results,
-									favourite: favdata[0].count === 1
+									favourite: favdata[0].count === 1,
+									username: req.session.user
 								}, {user: isUserLoggedIn(req)})
 								res.render("activity", data)
 							})
@@ -942,9 +943,6 @@ module.exports = (app, appData, upload) =>
 			res.sendStatus(403)
 			return
 		}
-
-		// let query = `insert into starred_activity (user_id, activity_id)
-			//			 values ((select id from user where username = ?), ?)`
 
 		let query = `insert into starred_activity (user_id, activity_id)
 					 values ((select id from user where username = ?), ?)`

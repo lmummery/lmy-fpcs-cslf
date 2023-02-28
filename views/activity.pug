@@ -5,20 +5,22 @@ html(lang="en")
 		title= activity.title
 		include head
 		link(rel="stylesheet" href="../css/activity-lesson-styles.css")
+		script(src="../js/activity-page-scripts.js")
 	body
 		include header
 		h2= activity.title
 
 		if user
+			div(hidden)#username-label= username
 			div.is-favourite
 				if favourite
-					a(href=`../remove-favourite?id=${activity.id}&from=act`)
+					a(href="#" onclick=`removeFavourite(${activity.id})`)
 						img(src="../img/starred.png")
 						p Favourite
 				else
-					a(href=`../add-favourite?id=${activity.id}`)
+					a(onclick=`addFavourite(${activity.id}`)
 						img(src="../img/unstarred.png")
-						p Favourite this activity
+						p Add to Favourites
 		else
 			a(href=`../login?url=/activity/${activity.id}`) Sign in to favourite this activity
 
