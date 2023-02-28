@@ -601,7 +601,7 @@ module.exports = (app, appData, upload) =>
 					 group by a.id`
 			db.query(query, req.session.user, (err, resCounts) =>
 			{
-				let data = Object.assign({}, appData, {activities: faves, resCounts: resCounts, user: isUserLoggedIn(req)})
+				let data = Object.assign({}, appData, {activities: faves, resCounts: resCounts, username: req.session.user, user: isUserLoggedIn(req)})
 				res.render("user-favourites", data)
 			})
 		})

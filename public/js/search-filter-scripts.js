@@ -83,11 +83,8 @@ function removeFavourite (activityId)
 	{
 		if ((this.status === 200) && this.readyState === 4)
 		{
-			// console.log(document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].children[0])
 			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].children[0].src = "../img/unstarred.png"
-			// console.log(document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0])
 			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].onclick = () => addFavourite(activityId)
-			// console.log(document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0])
 		}
 	}
 	xhttp.open("GET", `http://localhost:8000/api/remove-fav?username=${username}&actid=${activityId}`)
@@ -104,7 +101,6 @@ function addFavourite (activityId)
 		if (this.status === 200 && this.readyState === 4)
 		{
 			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].children[0].src = "../img/starred.png"
-			// document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].onclick = `removeFavourite(${activityId})`
 			document.getElementById(`result${activityId}`).children[0].children[0].children[1].children[0].onclick = () => removeFavourite(activityId)
 		}
 	}

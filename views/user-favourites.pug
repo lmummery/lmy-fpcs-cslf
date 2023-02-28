@@ -5,22 +5,25 @@ html(lang="en")
 		title My Favourites
 		include head
 		link(rel="stylesheet" href="../css/user-section-styles.css")
+		script(src="../js/favourites-table-scripts.js")
 	body
 		include header
 		main
 			include sidebar
 			div#main
 				h2 My Favourite Activities
+				div(hidden)#username-label= username
+
 				if activities.length === 0
 					h3 No favourite activities found
 				else
 					table
 						each activity in activities
 							tr
-								td: table.activity-table
+								td: table(id=`fav${activity.id}`).activity-table
 									tr
 										td(colspan=2).act-title: a(href=`../activity/${activity.id}`)= activity.title
-										td(rowspan=3).star-button: a(href=`../remove-favourite?id=${activity.id}&from=fav`): img(src="img/starred.png")
+										td(rowspan=3).star-button: a(onclick=`removeFavourite(${activity.id})`): img(src="img/starred.png")
 									tr
 										td.act-info #{activity.date_created.getDate()} #{getMonthStr(activity.date_created.getMonth())} #{activity.date_created.getFullYear()}
 										td.act-info #{activity.duration} minutes
@@ -79,7 +82,8 @@ html(lang="en")
 		return months[m - 1]
 	}
 
-	function getResCount(act_id, resCounts) {
+	function getResCount(act_id, resCounts)
+	{
 		for (const count of resCounts) {
 			if (count.id === act_id) {
 				return [count.rescount, count.rescount === 1 ? "" : "s"]
