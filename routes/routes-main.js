@@ -485,9 +485,77 @@ module.exports = (app, appData, upload) =>
 	const generatorValidation = [
 		body("tags").notEmpty(), body("duration").isInt()
 	]
-	app.post("/generate", redirectIfNotLoggedIn, generatorValidation, (req, res) =>
+	app.post("/generator", redirectIfNotLoggedIn, generatorValidation, (req, res) =>
 	{
-		res.render("generator", Object.assign({}, appData, {user: isUserLoggedIn(req)}))
+		const errors = validationResult(req)
+		if (! errors.isEmpty())
+		{
+			let prefill = {
+				year: req.body.year,
+				tags: req.sanitize(req.body.tags),
+				duration: req.body.duration
+			}
+			let data = Object.assign({}, appData, {prefill: prefill, user: isUserLoggedIn(req)})
+
+			res.render("generator", data)
+			return
+		}
+
+		req.body.tags = req.sanitize(req.body.tags)
+
+		console.debug(req.body.year)
+		console.debug(req.body.tags)
+		console.debug(req.body.duration)
+
+		let tagsArr = req.body.tags.split(", ")
+		let query = `select * from activity
+					 where year${req.body.year} = true
+					 and duration <= ?
+					 and tags like '%${tagsArr[0]}%'`
+		for (let i = 1; i < tagsArr.length; i ++)
+		{
+			query += `or tags like '%${tagsArr[i]}%' `
+		}
+		console.debug(query)
+		db.query(query, req.body.duration, (err, results) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				res.render("generator", Object.assign({}, appData, {user: isUserLoggedIn(req)}))
+				return
+			}
+
+			// Start with an empty lesson
+			let lesson = {
+				duration: 0,
+				activities: []
+			}
+
+			let tempAct, possibleActivities
+			while (lesson.duration < req.body.duration&& lesson.activities.length < results.length)
+			{
+				possibleActivities = results.filter(a => ! lesson.activities.includes(a) && a.duration <= req.body.duration - lesson.duration)
+
+				if (possibleActivities.length === 0)
+				{
+					break
+				}
+
+				console.debug(possibleActivities.length)
+				// Select a random activity
+				tempAct = possibleActivities[Math.floor(Math.random() * possibleActivities.length)]
+
+				lesson.activities.push(tempAct)
+				lesson.duration += tempAct.duration
+			}
+
+			console.debug(lesson.activities.length)
+
+			res.send(lesson)
+		})
+
+		// res.render("generator", Object.assign({}, appData, {user: isUserLoggedIn(req)}))
 	})
 
 	// Lesson page
@@ -519,10 +587,6 @@ module.exports = (app, appData, upload) =>
 					else
 					{
 						const activities = results
-
-						console.debug(results)
-
-						console.debug(activities)
 
 						let data = Object.assign({}, appData, {lesson: lesson, activities: activities}, {user: isUserLoggedIn(req)})
 						res.render("lesson", data)}

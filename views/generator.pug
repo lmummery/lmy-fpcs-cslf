@@ -9,36 +9,29 @@ html(lang="en")
 		include header
 		main
 			h2 Lesson Generator
-			form(method="post" action="./generate")
+			form(method="post" action="../generator")
 				div#yg-field
 					label(for="year") Year Group
 					select(name="year" id="year")
-						option(value=1) Year 1
-						option(value=2) Year 2
-						option(value=3) Year 3
-						option(value=4) Year 4
-						option(value=5) Year 5
-						option(value=6) Year 6
+						each val in [1, 2, 3, 4, 5, 6]
+							if prefill && prefill.year === val
+								option(value=val selected) Year #{val}
+							else
+								option(value=val) Year #{val}
 
 				div#tags-field
 					label(for="tags") Tags
 					input(type="text" name="tags" id="tags")
+				label#tag-msg Separate tags with commas (,)
 
 				div#time-field
 					label(for="duration") Time
 					select(name="duration" id="duration")
-						option(value=5) 5
-						option(value=10) 10
-						option(value=15) 15
-						option(value=20) 20
-						option(value=25) 25
-						option(value=30) 30
-						option(value=35) 35
-						option(value=40) 40
-						option(value=45) 45
-						option(value=50) 50
-						option(value=55) 55
-						option(value=60) 60
+						each val in [15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+							if prefill && prefill.duration === val
+								option(value=val selected)= val
+							else
+								option(value=val)= val
 					label minutes
 
 				input(type="submit" value="Generate Lesson")
