@@ -1,0 +1,41 @@
+doctype html
+
+html(lang="en")
+	head
+		title= lesson.title
+		include head
+		link(rel="stylesheet" href="../css/generator-styles.css")
+		script(src="../js/gen-lesson-scripts.js")
+	body
+		include header
+		main
+			label(hidden)#username-label= username
+
+			label(for="title-input-field")#title-input-label Edit Lesson Title
+			input(name=lesson_title value=lesson.title)#title-input-field
+
+			p#yg-label Year #{lesson.yeargroup}
+			p#duration-label #{lesson.duration} minutes
+
+			h3 Lesson Contents
+
+			//a(href=`../lessondoc/${lesson.id}` download) Download Lesson Plan
+			//br
+			//a(href=`../lessonzip/${lesson.id}` download) Download All Resources
+			//br
+			//br
+
+			table#lesson-activities
+				each activity in lesson.activities
+					tr
+						table.lesson-activity
+							tr(hidden): td.act-id= activity.id
+							tr
+								td: a(href=`../activity/${activity.id}`)= activity.title
+								td(rowspan=2).act-download: a(href=activity.actzip download) Download Activity
+								td(onclick="moveUp(this)").pos-button.up-button UP
+							tr
+								td #{activity.duration} minutes
+								td(onclick="moveDown(this)").pos-button.down-button DOWN
+
+			button(onclick="getLessonData()")#lesson-save-button Save This Lesson

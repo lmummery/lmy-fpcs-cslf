@@ -503,10 +503,6 @@ module.exports = (app, appData, upload) =>
 
 		req.body.tags = req.sanitize(req.body.tags)
 
-		console.debug(req.body.year)
-		console.debug(req.body.tags)
-		console.debug(req.body.duration)
-
 		let tagsArr = req.body.tags.split(", ")
 		let query = `select * from activity
 					 where year${req.body.year} = true
@@ -516,7 +512,7 @@ module.exports = (app, appData, upload) =>
 		{
 			query += `or tags like '%${tagsArr[i]}%' `
 		}
-		console.debug(query)
+
 		db.query(query, req.body.duration, (err, results) =>
 		{
 			if (err)
@@ -529,6 +525,8 @@ module.exports = (app, appData, upload) =>
 			// Start with an empty lesson
 			let lesson = {
 				duration: 0,
+				yeargroup: req.body.year,
+				title: `Year ${req.body.year} ${tagsArr[Math.floor(Math.random() * tagsArr.length)].toLowerCase()}`,
 				activities: []
 			}
 
@@ -542,7 +540,6 @@ module.exports = (app, appData, upload) =>
 					break
 				}
 
-				console.debug(possibleActivities.length)
 				// Select a random activity
 				tempAct = possibleActivities[Math.floor(Math.random() * possibleActivities.length)]
 
@@ -550,12 +547,58 @@ module.exports = (app, appData, upload) =>
 				lesson.duration += tempAct.duration
 			}
 
-			console.debug(lesson.activities.length)
-
-			res.send(lesson)
+			// res.send(lesson)
+			let data = Object.assign({}, appData, {lesson: lesson, username: req.session.user, user: isUserLoggedIn(req)})
+			res.render("generated-lesson", data)
 		})
 
 		// res.render("generator", Object.assign({}, appData, {user: isUserLoggedIn(req)}))
+	})
+
+	// API route to save generated lesson
+	app.get("/api/savelesson", (req, res) =>
+	{
+		let data = {
+			title: req.sanitize(req.query.title),
+			yg: parseInt(req.query.yg),
+			duration: parseInt(req.query.duration),
+			creator: req.sanitize(req.query.creator),
+			activities: JSON.parse(req.query.acts)
+		}
+
+		let query = `insert into lesson (title, date_created, creator, duration, yeargroup)
+					 values (?, curdate(), ?, ?, ?)`
+		let querydata = [data.title, data.creator, data.duration, data.yg]
+		db.query(query, querydata, (err, result) =>
+		{
+			if (err)
+			{
+				res.sendStatus(500)
+				return
+			}
+
+			const lessonId = result.insertId
+
+			// TODO - this would be safer with a transaction
+			for (let i = 0; i < data.activities.length; i ++)
+			{
+				let actId = data.activities[i]
+
+				query = `insert into lesson_activity (lesson_id, activity_id, num_in_lesson)
+						 values (?, ?, ?)`
+				querydata = [lessonId, actId, i + 1]
+				db.query(query, querydata, err =>
+				{
+					if (err)
+					{
+						res.sendStatus(500)
+						return
+					}
+				})
+			}
+
+			res.status(200).send(`${lessonId}`)
+		})
 	})
 
 	// Lesson page
@@ -863,7 +906,7 @@ module.exports = (app, appData, upload) =>
 		}
 	})
 
-	app.get("/logout", redirectIfNotLoggedIn, (req, res) =>
+	app.get("/logout", (req, res) =>
 	{
 		delete req.session.user
 		res.redirect("../")
