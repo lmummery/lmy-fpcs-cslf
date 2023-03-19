@@ -2,10 +2,6 @@ function removeFavourite (activityId)
 {
 	const username = document.getElementById("username-label").innerText
 
-	console.log("Clicked to remove!")
-	// console.log(document.getElementsByClassName("is-favourite")[0].children[0].children[0])
-	// console.log(document.getElementsByClassName("is-favourite")[0].children[0].children[1])
-
 	// Trigger the route to remove a favourite without changing the web browser location
 	let xhttp = new XMLHttpRequest()
 	xhttp.onreadystatechange = function ()
@@ -25,7 +21,6 @@ function addFavourite (activityId)
 {
 	const username = document.getElementById("username-label").innerText
 
-	console.log("Clicked to add!")
 	// Trigger the route to add a favourite without changing the web browser location
 	let xhttp = new XMLHttpRequest()
 	xhttp.onreadystatechange = function ()
@@ -39,4 +34,31 @@ function addFavourite (activityId)
 	}
 	xhttp.open("GET", `http://localhost:8000/api/add-fav?username=${username}&actid=${activityId}`)
 	xhttp.send()
+}
+
+function addToLesson (actId)
+{
+	const lessonId = document.getElementById("lesson-selector").value
+	console.log(lessonId)
+
+	if (lessonId !== "NULL") // As long as the empty option is not selected
+	{
+		let xhttp = new XMLHttpRequest()
+		xhttp.onreadystatechange = function ()
+		{
+			if (this.readyState === 4)
+			{
+				if (this.status === 200)
+				{
+					console.log("Woop did a thing!")
+				}
+				else if (this.status === 412)
+				{
+					alert("This activity is already in that lesson!")
+				}
+			}
+		}
+		xhttp.open("GET", `http://localhost:8000/api/addtolesson?act=${actId}&les=${lessonId}`)
+		xhttp.send()
+	}
 }

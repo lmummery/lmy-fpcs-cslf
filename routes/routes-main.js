@@ -314,13 +314,19 @@ module.exports = (app, appData, upload) =>
 									 and u.username = ?`
 							db.query(query, [req.params.id, req.session.user], (err, favdata) =>
 							{
-								let data = Object.assign({}, appData, {
-									activity: result[0],
-									resources: results,
-									favourite: favdata[0].count === 1,
-									username: req.session.user
-								}, {user: isUserLoggedIn(req)})
-								res.render("activity", data)
+								query = `select * from lesson where creator = ?`
+
+								db.query(query, [req.session.user], (err, userlessons) =>
+								{
+									let data = Object.assign({}, appData, {
+										activity: result[0],
+										resources: results,
+										favourite: favdata[0].count === 1,
+										username: req.session.user,
+										userlessons: userlessons
+									}, {user: isUserLoggedIn(req)})
+									res.render("activity", data)
+								})
 							})
 						}
 						else
@@ -599,6 +605,63 @@ module.exports = (app, appData, upload) =>
 
 			res.status(200).send(`${lessonId}`)
 		})
+	})
+
+	app.get("/api/addtolesson", (req, res) =>
+	{
+		// TODO - this should be a stored procedure
+		// Get number of existing activities in the lesson to not duplicate num_in_lesson
+		let query = `select count(*) as count from lesson where id = ?`
+		db.query(query, [req.query.les], (err, result) =>
+		{
+			if (err)
+			{
+				res.send(500)
+				return
+			}
+
+			const next = result[0].count + 1
+
+			// Check that the activity isn't already in the lesson
+			query = `select count(*) as count
+					 from lesson_activity
+					 where lesson_id = ?
+					 and activity_id = ?`
+			let querydata = [req.query.les, req.query.act]
+
+			db.query(query, querydata, (err, result) =>
+			{
+				if (err)
+				{
+					res.send(500) // 500 Internal server error
+					return
+				}
+
+				if (result[0].count !== 0)
+				{
+					res.send(412) // 412 Failed preconditions
+					return
+				}
+
+				query = `insert into lesson_activity
+                         (lesson_id, activity_id, num_in_lesson)
+                         values (?, ?, ?)`
+				querydata = [req.query.les, req.query.act, next]
+				db.query(query, querydata, (err, result) =>
+				{
+					if (err)
+					{
+						res.send(500) // 500 Internal server error
+						return
+					}
+
+					res.send(200) // 200 OK
+				})
+
+			})
+		})
+
+		res.send(200)
 	})
 
 	// Lesson page

@@ -55,6 +55,17 @@
     display: inline;
     vertical-align: center;
   }
+
+  #add-to-lessons {
+    margin-top: 10px;
+  }
+  #add-to-lessons label {
+    margin-right: 10px;
+  }
+
+  #lesson-selector {
+    margin-right: 10px;
+  }
 }
 
 /*# sourceMappingURL=activity-lesson-styles.css.map */

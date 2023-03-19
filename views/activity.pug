@@ -21,6 +21,13 @@ html(lang="en")
 					a(onclick=`addFavourite(${activity.id}`)
 						img(src="../img/unstarred.png")
 						p Add to Favourites
+			div#add-to-lessons
+				label(for="lesson-selector") Add to Lesson:
+				select(name="lesson-selector")#lesson-selector
+					option(value="NULL")
+					each lesson in userlessons
+						option(value=lesson.id id=`lesson${lesson.id}`)= lesson.title
+				button(onclick=`addToLesson(${activity.id})`) Add to Lesson
 		else
 			a(href=`../login?url=/activity/${activity.id}`) Sign in to favourite this activity
 
