@@ -77,11 +77,12 @@ html(lang="en")
 									td.act-info= yeargroupString(activity)
 								tr(hidden)
 									td.yg-info= ygShortString(activity)
-								tr
-									if activity.description.length <= 70
-										td(colspan=2).act-info= activity.description
-									else
-										td(colspan=2).act-info= activity.description.substring(0, 67) + "..."
+								if activity.description
+									tr
+										if activity.description.length <= 70
+											td(colspan=2).act-info= activity.description
+										else
+											td(colspan=2).act-info= activity.description.substring(0, 67) + "..."
 				h3(hidden)#none-found-msg No results matching filters
 
 -

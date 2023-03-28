@@ -125,8 +125,8 @@ module.exports = (app, appData, upload) =>
 
 	// New activity form POST
 	const activityValidation = [
-		body("title").notEmpty(),
-		body("description").notEmpty()
+		body("title").notEmpty()
+		// body("description").notEmpty()
 	]
 	app.post("/newactivity", upload.array("files"), redirectIfNotLoggedIn, activityValidation, (req, res) =>
 	{
@@ -660,8 +660,6 @@ module.exports = (app, appData, upload) =>
 
 			})
 		})
-
-		res.send(200)
 	})
 
 	// Lesson page

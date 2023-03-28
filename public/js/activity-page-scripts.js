@@ -50,7 +50,7 @@ function addToLesson (actId)
 			{
 				if (this.status === 200)
 				{
-					console.log("Woop did a thing!")
+					alert("Added to lesson!")
 				}
 				else if (this.status === 412)
 				{
